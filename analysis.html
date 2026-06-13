@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sea Limited (NYSE: SE) 财务与估值深度分析报告 (2024-2026)</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #0ea5e9;
+            --primary-gradient: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            --accent: #a855f7;
+            --accent-gradient: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+            --success: #10b981;
+            --danger: #f43f5e;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #0ea5e9, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .badge-primary {
+            background-color: rgba(14, 165, 233, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+        }
+
+        /* Grid Layouts */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+            border-color: rgba(14, 165, 233, 0.4);
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .text-success { color: var(--success); }
+        .text-danger { color: var(--danger); }
+        .text-warning { color: var(--warning); }
+
+        /* Charts Layout */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            min-height: 400px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
+            width: 100%;
+        }
+
+        /* Tabs & Tables Section */
+        .table-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            overflow: hidden;
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--text-main);
+            background: var(--primary-gradient);
+            box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        th:first-child, td:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Report Analysis Section */
+        .report-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .report-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #0ea5e9, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .report-section h3 {
+            font-size: 1.3rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .report-section p {
+            margin-bottom: 1.2rem;
+            color: #cbd5e1;
+            font-size: 1.05rem;
+            text-align: justify;
+        }
+
+        .report-section ul, .report-section ol {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+            color: #cbd5e1;
+        }
+
+        .report-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-box {
+            background-color: rgba(14, 165, 233, 0.08);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+            color: #e2e8f0;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 4rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Badge and Header -->
+        <header>
+            <div class="badge badge-primary">Deep Dive Analysis</div>
+            <h1>Sea Limited (NYSE: SE) 财务与估值深度分析报告</h1>
+            <p>基于最近八个季度 (Q2 2024 - Q1 2026) 官方财务数据与市场走势</p>
+        </header>
+
+        <!-- KPI Cards Grid -->
+        <div class="metrics-grid">
+            <div class="card">
+                <div class="card-title">最新季度总营收 (Q1 2026)</div>
+                <div class="card-value">$7.10 B</div>
+                <div class="card-change text-success">
+                    <span>▲ +46.6% YoY</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">最新季度净利润 (Q1 2026)</div>
+                <div class="card-value">$438.2 M</div>
+                <div class="card-change text-success">
+                    <span>▲ +6.7% YoY</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">最新滚动市盈率 (TTM P/E)</div>
+                <div class="card-value">30.91 x</div>
+                <div class="card-change text-warning">
+                    <span>相比2025年高点压缩超58%</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">集团净资产 (Q1 2026)</div>
+                <div class="card-value">$12.85 B</div>
+                <div class="card-change text-success">
+                    <span>两年间增长 92.8%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Layout -->
+        <div class="charts-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Sea 历史收盘股价与 TTM P/E 走势</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="stockPeChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>TTM 营业收入与净利润走势 (USD Billion)</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="revNetChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>核心业务季度 GAAP 营收拆分 (USD Million)</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="segmentRevChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>核心业务季度营业利润拆分 (USD Million)</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="segmentOiChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Tables Section -->
+        <div class="table-section">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab(event, 'valuationTab')">估值与 TTM 历史</button>
+                <button class="tab-btn" onclick="switchTab(event, 'shopeeTab')">Shopee (电商)</button>
+                <button class="tab-btn" onclick="switchTab(event, 'moneeTab')">Monee (数字金融)</button>
+                <button class="tab-btn" onclick="switchTab(event, 'garenaTab')">Garena (数字娱乐)</button>
+                <button class="tab-btn" onclick="switchTab(event, 'otherTab')">其他业务</button>
+                <button class="tab-btn" onclick="switchTab(event, 'groupTab')">集团合并财报</button>
+            </div>
+
+            <!-- Tab 1: Valuation -->
+            <div id="valuationTab" class="tab-content table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>季度名称</th>
+                            <th>季度末股价</th>
+                            <th>总股数 (百万)</th>
+                            <th>总市值 ($ 亿)</th>
+                            <th>TTM 营业收入 ($ 亿)</th>
+                            <th>TTM 净利润 ($ 亿)</th>
+                            <th>市盈率 (TTM P/E)</th>
+                            <th>总资产 ($ 亿)</th>
+                            <th>净资产 ($ 亿)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="valuationTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Tab 2: Shopee -->
+            <div id="shopeeTab" class="tab-content table-wrapper" style="display:none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>季度</th>
+                            <th>营业收入 ($ 百万)</th>
+                            <th>营业成本 ($ 百万)</th>
+                            <th>毛利润 ($ 百万)</th>
+                            <th>毛利率</th>
+                            <th>销售及市场推广费 ($ 百万)</th>
+                            <th>分部营业利润 ($ 百万)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="shopeeTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Tab 3: Monee -->
+            <div id="moneeTab" class="tab-content table-wrapper" style="display:none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>季度</th>
+                            <th>营业收入 ($ 百万)</th>
+                            <th>营业成本 ($ 百万)</th>
+                            <th>毛利润 ($ 百万)</th>
+                            <th>毛利率</th>
+                            <th>销售及市场推广费 ($ 百万)</th>
+                            <th>坏账信用损失准备 ($ 百万)</th>
+                            <th>分部营业利润 ($ 百万)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="moneeTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Tab 4: Garena -->
+            <div id="garenaTab" class="tab-content table-wrapper" style="display:none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>季度</th>
+                            <th>营业收入 ($ 百万)</th>
+                            <th>营业成本 ($ 百万)</th>
+                            <th>毛利润 ($ 百万)</th>
+                            <th>毛利率</th>
+                            <th>销售及市场推广费 ($ 百万)</th>
+                            <th>分部营业利润 ($ 百万)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="garenaTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Tab 4.5: Other -->
+            <div id="otherTab" class="tab-content table-wrapper" style="display:none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>季度</th>
+                            <th>营业收入 ($ 百万)</th>
+                            <th>营业成本 ($ 百万)</th>
+                            <th>毛利润 ($ 百万)</th>
+                            <th>分部营业利润 ($ 百万)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="otherTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Tab 5: Group -->
+            <div id="groupTab" class="tab-content table-wrapper" style="display:none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>季度</th>
+                            <th>集团总营收 ($ 百万)</th>
+                            <th>集团总成本 ($ 百万)</th>
+                            <th>集团毛利润 ($ 百万)</th>
+                            <th>集团营业利润 ($ 百万)</th>
+                            <th>集团净利润 ($ 百万)</th>
+                            <th>资产负债率</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groupTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Financial Analyst Report Section -->
+        <div class="report-section">
+            <h2>专业金融分析报告 (Financial Analyst Review)</h2>
+            
+            <h3>1. 集团业绩整体评价：从严重亏损到健康盈利的战略转变</h3>
+            <p>
+                在过去的两年中，Sea Limited (NYSE: SE) 完成了惊人的“业绩大逆转”。在 2024 年第二季度结束时，公司的滚动滚动十二个月 (TTM) 净亏损达到了 1.99 亿美元，其核心电商业务 Shopee 也深陷与对手的补贴价格战中。为了扭转乾坤，集团管理层采取了“降本增效、停止无节制烧钱”的强力策略，效果显著。
+            </p>
+            <p>
+                到 2026 年第一季度，Sea 的 TTM 营业收入从 144.7 亿美元增长至 251.9 亿美元，增幅达 74%。更引人瞩目的是，其 TTM 净利润暴增至 16.38 亿美元，集团摆脱了烧钱标签。这主要归功于电商业务变现率的提升和数字金融业务的高速放贷扩张。
+            </p>
+
+            <h3>2. 核心业务分部深入剖析</h3>
+            
+            <h4>E-commerce (Shopee) — 规模效应显现与商业化变现加速</h4>
+            <p>
+                Shopee 的季度营收从 Q2 2024 的 28.2 亿美元激增到 Q1 2026 的 51.1 亿美元，这不仅说明其依然保持了极高速度的扩张，而且在盈利能力上实现了质的突破。其分部营业利润在 Q1 2025 创下 1.95 亿美元的阶段性新高。虽然在 2025 下半年由于在巴西以及本土市场加码仓储物流投资导致营业利润略有压缩（稳定在 1.1 - 1.4 亿美元区间），但其毛利率一直维持在 30% 左右，相较价格战时期大幅改观。这反映出 Shopee 在东南亚的绝对主导地位，使其有能力通过提高佣金变现率和变现广告收入来稳定造血，不再仅仅依赖集团游戏业务供养。
+            </p>
+            
+            <h4>Digital Financial Services (Monee / SeaMoney) — 第二增长引擎的野蛮生长与潜在信用风险</h4>
+            <p>
+                Monee 绝对是集团近年来最耀眼的成长明星。其单季收入从 Q2 2024 的 5.19 亿美元成长至 Q1 2026 的 12.42 亿美元，增长了 139%。分部季度营业利润也攀升至 2.66 亿美元，成为全集团最稳定的利润池。
+            </p>
+            <div class="highlight-box">
+                <p>
+                    <strong>警惕坏账信用风险（Credit Risk Escalation）</strong>：在 Monee 放贷业务狂奔的同时，公司的坏账准备计提（Provision for credit losses）从 Q2 2024 的 1.67 亿美元飙升至 Q1 2026 的 4.61 亿美元，增幅高达 176%，占总营收的比例接近 37%。随着放贷规模向 100 亿美元级别靠拢，坏账损失增速已经超越了放贷收入增速。这表明，虽然目前该业务利润丰厚，但坏账问题犹如一颗定时炸弹，如果出现区域宏观经济下行，金融分部可能面临剧烈的坏账回拨压力。
+                </p>
+            </div>
+            
+            <h4>Digital Entertainment (Garena) — 现金牛的反弹与“Free Fire”生命周期的维持</h4>
+            <p>
+                作为全集团唯一的原始“现金牛”，Garena 在 2024 年上半年曾一度面临核心游戏《Free Fire》玩家流失和老化的阵痛，单季度营收甚至缩减至 4.35 亿美元。然而，在管理层对《Free Fire》进行版本迭代、推出轻量级优化版本并积极重返印度市场后，该业务在 2025 年迎来了强劲的第二春。Q4 2025 季度营收达到 7.01 亿美元，分部营业利润达 3.79 亿美元，利润率居高不下。Garena 重新稳定下来，持续为 Shopee 的物流仓储投入和 Monee 的放贷本金提供充沛的现金流保障。
+            </p>
+
+            <h3>3. 估值压缩迷思：为什么利润创历史新高，股价却腰斩？</h3>
+            <p>
+                在本次分析中，最值得深思的现象是<strong>“业绩与股价的极端背离”</strong>。
+                从 Q3 2025 到 Q1 2026 期间，Sea 的 TTM 营业收入从 210 亿美元增长到 252 亿美元，TTM 净利润从 14.37 亿美元增长到 16.38 亿美元，基本面指标屡创新高。然而，其股价却从 Q3 2025 收盘价的 178.73 美元暴跌至 Q1 2026 的 82.81 美元，跌幅高达 53.7%，公司市值蒸发了 550 多亿美元。
+            </p>
+            <p>
+                从估值乘数来看，Sea 经历了剧烈的<strong>“市盈率杀估值”</strong>过程。其 TTM P/E 乘数从 Q3 2024 的 620 倍（极高市盈率阶段，因为利润刚刚转正），到 Q3 2025 稳定在 73.67 倍，最后在 Q1 2026 被残酷地压缩到了 30.91 倍。导致这一市场背离的原因有三点：
+            </p>
+            <ol>
+                <li><strong>增长天花板预期</strong>：市场对《Free Fire》的反弹持怀疑态度，认为游戏业务的再度爆发仅是“回光返照”，并没有新游戏接力棒，导致对 Garena 的长期折现价值大打折扣。</li>
+                <li><strong>行业竞争格局恶化</strong>：拼多多海外版 Temu 宣布加大对巴西和拉美市场的投放，TikTok Shop 在东南亚与 Tokopedia 合并后重新大肆扩张，这使投资者开始担忧 Shopee 的低费用盈利状态在未来将难以维持，随时有被卷入新一轮烧钱防守战的可能。</li>
+                <li><strong>信贷敞口安全边界收窄</strong>：Monee 的坏账损失快速攀升，引发金融行业普遍对消费信贷坏账率破防的恐慌，估值模型中调高了风险折现率。</li>
+            </ol>
+
+            <h3>4. 结论与投资建议：31倍PE的Sea是否具有安全边际？</h3>
+            <p>
+                从专业分析师的角度来看，目前的 Sea 已经进入了非常有吸引力的估值区间。
+                随着总资产规模扩张到 305.9 亿美元，且净资产从 2024 年中的 68.7 亿美元增长至目前的 128.5 亿美元（增长几近一倍），资产负债表的防御属性大幅度增强。
+                TTM P/E 目前仅为 30.91x，考虑到 Shopee 和 Monee 分别在其垂直领域拥有极高的行业门槛和网络效应，这几乎是 Sea 历史上最便宜的时刻之一。
+            </p>
+            <div class="highlight-box" style="border-left-color: var(--success); background-color: rgba(16, 185, 129, 0.08);">
+                <p>
+                    <strong>总结</strong>：投资者当前对 Sea 的悲观态度有些过度定价了竞争威胁。若下几个季度 Shopee 能够维持 1 亿美元以上的季度分部营业利润，且 Monee 能够有效控制坏账飙升速度，Sea 极有可能迎来估值修复与基本面提升的“戴维斯双击”。
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>© 2026 Sea Limited Financial Analysis Dashboard. 本报告所载数据源自公司官方财报披露，不构成投资建议。</p>
+        </footer>
+    </div>
+
+    <!-- Data Injection and Chart Script -->
+    <script>
+        // Data injected from Python
+        const rawFinancials = {"Q1_2024": {"segment_data": {"shopee": {"revenue": 2747768, "cost_of_revenue": -1936340, "sales_marketing": -675881, "credit_losses": 0, "operating_income": -97335}, "monee": {"revenue": 499364, "cost_of_revenue": -78301, "sales_marketing": -56768, "credit_losses": -161729, "operating_income": 134443}, "garena": {"revenue": 458119, "cost_of_revenue": -155977, "sales_marketing": -19376, "credit_losses": 0, "operating_income": 236198}, "other": {"revenue": 29078, "cost_of_revenue": 0, "sales_marketing": 0, "credit_losses": 0, "operating_income": -13787}, "total": {"revenue": 3734329, "operating_income": 259519, "net_income": -23000}}, "balance_sheet": {"total_assets": 19095040, "total_liabilities": 12326138, "net_assets": 6667078}}, "Q2_2024": {"segment_data": {"shopee": {"revenue": 2821269, "cost_of_revenue": -1993767, "sales_marketing": -672944, "credit_losses": 0, "operating_income": -84762}, "monee": {"revenue": 519338, "cost_of_revenue": -78927, "sales_marketing": -54950, "credit_losses": -167212, "operating_income": 151261}, "garena": {"revenue": 435559, "cost_of_revenue": -139501, "sales_marketing": -27069, "credit_losses": 0, "operating_income": 210078}, "other": {"revenue": 30702, "cost_of_revenue": 0, "sales_marketing": 0, "credit_losses": 0, "operating_income": -9003}, "total": {"revenue": 3806868, "operating_income": 267574, "net_income": 79911}}, "balance_sheet": {"total_assets": 19570020, "total_liabilities": 12603743, "net_assets": 6867278}}, "Q3_2024": {"segment_data": {"shopee": {"revenue": 3183558, "cost_of_revenue": -2209057, "sales_marketing": -763340, "credit_losses": 0, "operating_income": -36818}, "monee": {"revenue": 615711, "cost_of_revenue": -91426, "sales_marketing": -65632, "credit_losses": -210206, "operating_income": 173942}, "garena": {"revenue": 497847, "cost_of_revenue": -156043, "sales_marketing": -26583, "credit_losses": 0, "operating_income": 262402}, "other": {"revenue": 31117, "cost_of_revenue": 0, "sales_marketing": 0, "credit_losses": 0, "operating_income": -11001}, "total": {"revenue": 4328233, "operating_income": 388525, "net_income": 153324}}, "balance_sheet": {"total_assets": 21691690, "total_liabilities": 13663111, "net_assets": 7916407}}, "Q4_2024": {"segment_data": {"shopee": {"revenue": 3662636, "cost_of_revenue": -2472366, "sales_marketing": -853919, "credit_losses": 0, "operating_income": 79484}, "monee": {"revenue": 733326, "cost_of_revenue": -99770, "sales_marketing": -121036, "credit_losses": -232260, "operating_income": 197856}, "garena": {"revenue": 519064, "cost_of_revenue": -159065, "sales_marketing": -44528, "credit_losses": 0, "operating_income": 270143}, "other": {"revenue": 35410, "cost_of_revenue": 0, "sales_marketing": 0, "credit_losses": 0, "operating_income": -10112}, "total": {"revenue": 4950436, "operating_income": 537371, "net_income": 237592}}, "balance_sheet": {"total_assets": 22625469, "total_liabilities": 14147893, "net_assets": 8372335}}, "Q1_2025": {"segment_data": {"shopee": {"revenue": 3524186, "cost_of_revenue": -2307199, "sales_marketing": -777492, "credit_losses": 0, "operating_income": 195002}, "monee": {"revenue": 787117, "cost_of_revenue": -106433, "sales_marketing": -96261, "credit_losses": -277562, "operating_income": 228612}, "garena": {"revenue": 495589, "cost_of_revenue": -181004, "sales_marketing": -28906, "credit_losses": 0, "operating_income": 220031}, "other": {"revenue": 34208, "cost_of_revenue": 0, "sales_marketing": 0, "credit_losses": 0, "operating_income": -11006}, "total": {"revenue": 4841100, "operating_income": 632639, "net_income": 410825}}, "balance_sheet": {"total_assets": 23843073, "total_liabilities": 14768732, "net_assets": 8963418}}, "Q2_2025": {"segment_data": {"shopee": {"revenue": 3771076, "cost_of_revenue": -2550913, "sales_marketing": -803431, "credit_losses": 0, "operating_income": 154851}, "monee": {"revenue": 882808, "cost_of_revenue": -115899, "sales_marketing": -122554, "credit_losses": -315610, "operating_income": 243115}, "garena": {"revenue": 559118, "cost_of_revenue": -171922, "sales_marketing": -43103, "credit_losses": 0, "operating_income": 275465}, "other": {"revenue": 46475, "cost_of_revenue": 0, "sales_marketing": 0, "credit_losses": 0, "operating_income": -15683}, "total": {"revenue": 5259477, "operating_income": 657748, "net_income": 414204}}, "balance_sheet": {"total_assets": 25440410, "total_liabilities": 15656507, "net_assets": 9676846}}, "Q3_2025": {"segment_data": {"shopee": {"revenue": 4294756, "cost_of_revenue": -3025725, "sales_marketing": -894670, "credit_losses": 0, "operating_income": 110117}, "monee": {"revenue": 989861, "cost_of_revenue": -125669, "sales_marketing": -157964, "credit_losses": -372283, "operating_income": 248177}, "garena": {"revenue": 653033, "cost_of_revenue": -224225, "sales_marketing": -51424, "credit_losses": 0, "operating_income": 309811}, "other": {"revenue": 48374, "cost_of_revenue": 0, "sales_marketing": 0, "credit_losses": 0, "operating_income": -27039}, "total": {"revenue": 5986024, "operating_income": 641066, "net_income": 374988}}, "balance_sheet": {"total_assets": 26751302, "total_liabilities": 16447493, "net_assets": 10195716}}, "Q4_2025": {"segment_data": {"shopee": {"revenue": 4974587, "cost_of_revenue": -3496429, "sales_marketing": -1071160, "credit_losses": 0, "operating_income": 121082}, "monee": {"revenue": 1131855, "cost_of_revenue": -127023, "sales_marketing": -237449, "credit_losses": -400101, "operating_income": 252778}, "garena": {"revenue": 701025, "cost_of_revenue": -214227, "sales_marketing": -50671, "credit_losses": 0, "operating_income": 378764}, "other": {"revenue": 44401, "cost_of_revenue": 0, "sales_marketing": 0, "credit_losses": 0, "operating_income": -36809}, "total": {"revenue": 6851868, "operating_income": 715815, "net_income": 410877}}, "balance_sheet": {"total_assets": 29370979, "total_liabilities": 16722651, "net_assets": 12526503}}, "Q1_2026": {"segment_data": {"shopee": {"revenue": 5113649, "cost_of_revenue": -3578167, "sales_marketing": -1091757, "credit_losses": 0, "operating_income": 138904}, "monee": {"revenue": 1241782, "cost_of_revenue": -142527, "sales_marketing": -231868, "credit_losses": -461300, "operating_income": 265614}, "garena": {"revenue": 696564, "cost_of_revenue": -216470, "sales_marketing": -44830, "credit_losses": 0, "operating_income": 363636}, "other": {"revenue": 45494, "cost_of_revenue": 0, "sales_marketing": 0, "credit_losses": 0, "operating_income": -32288}, "total": {"revenue": 7097489, "operating_income": 735866, "net_income": 438222}}, "balance_sheet": {"total_assets": 30590229, "total_liabilities": 17608848, "net_assets": 12853167}}};
+        const valuationData = {"Q2_2024": {"stock_price": 69.95, "shares_outstanding": 571968378, "market_cap_usd": 40009188041.1, "ttm_revenue_usd": 14467993000, "ttm_net_income_usd": -198682000, "pe_ratio": "Negative (N/A)", "total_assets_usd": 19570020000, "net_assets_usd": 6867278000, "total_liabilities_usd": 12603743000}, "Q3_2024": {"stock_price": 106.66, "shares_outstanding": 573260590, "market_cap_usd": 61143974529.4, "ttm_revenue_usd": 15486058000, "ttm_net_income_usd": 98620000, "pe_ratio": 619.9956857574529, "total_assets_usd": 21691690000, "net_assets_usd": 7916407000, "total_liabilities_usd": 13663111000}, "Q4_2024": {"stock_price": 114.73, "shares_outstanding": 580046457, "market_cap_usd": 66548730011.61, "ttm_revenue_usd": 16819866000, "ttm_net_income_usd": 447827000, "pe_ratio": 148.6036572417697, "total_assets_usd": 22625469000, "net_assets_usd": 8372335000, "total_liabilities_usd": 14147893000}, "Q1_2025": {"stock_price": 138.07, "shares_outstanding": 590286824, "market_cap_usd": 81500901789.68, "ttm_revenue_usd": 17926637000, "ttm_net_income_usd": 881652000, "pe_ratio": 92.44112392381574, "total_assets_usd": 23843073000, "net_assets_usd": 8963418000, "total_liabilities_usd": 14768732000}, "Q2_2025": {"stock_price": 155.93, "shares_outstanding": 591566401, "market_cap_usd": 92242948907.93001, "ttm_revenue_usd": 19379246000, "ttm_net_income_usd": 1215945000, "pe_ratio": 75.86111946504982, "total_assets_usd": 25440410000, "net_assets_usd": 9676846000, "total_liabilities_usd": 15656507000}, "Q3_2025": {"stock_price": 178.73, "shares_outstanding": 592592032, "market_cap_usd": 105913973879.36, "ttm_revenue_usd": 21037037000, "ttm_net_income_usd": 1437609000, "pe_ratio": 73.67369978857951, "total_assets_usd": 26751302000, "net_assets_usd": 10195716000, "total_liabilities_usd": 16447493000}, "Q4_2025": {"stock_price": 127.57, "shares_outstanding": 602240123, "market_cap_usd": 76827772491.11, "ttm_revenue_usd": 22938469000, "ttm_net_income_usd": 1610894000, "pe_ratio": 47.69263060828956, "total_assets_usd": 29370979000, "net_assets_usd": 12526503000, "total_liabilities_usd": 16722651000}, "Q1_2026": {"stock_price": 82.81, "shares_outstanding": 611583932, "market_cap_usd": 50645265408.92, "ttm_revenue_usd": 25194858000, "ttm_net_income_usd": 1638291000, "pe_ratio": 30.913473497028306, "total_assets_usd": 30590229000, "net_assets_usd": 12853167000, "total_liabilities_usd": 17608848000}};
+        
+        // Populate Valuation Table
+        const valBody = document.getElementById("valuationTableBody");
+        const quarters = ["Q2_2024", "Q3_2024", "Q4_2024", "Q1_2025", "Q2_2025", "Q3_2025", "Q4_2025", "Q1_2026"];
+        
+        quarters.forEach(q => {
+            const v = valuationData[q];
+            const tr = document.createElement("tr");
+            
+            const mc = (v.market_cap_usd / 1e9).toFixed(2);
+            const rev = (v.ttm_revenue_usd / 1e9).toFixed(2);
+            const net = (v.ttm_net_income_usd / 1e9).toFixed(2);
+            const pe = typeof v.pe_ratio === "number" ? v.pe_ratio.toFixed(2) + " x" : v.pe_ratio;
+            const assets = (v.total_assets_usd / 1e9).toFixed(2);
+            const equity = (v.net_assets_usd / 1e9).toFixed(2);
+            const shares = (v.shares_outstanding / 1e6).toFixed(2);
+            
+            tr.innerHTML = `
+                <td>${q.replace("_", " ")}</td>
+                <td>$${v.stock_price.toFixed(2)}</td>
+                <td>${shares} M</td>
+                <td style="font-weight:600; color:var(--primary);">$${mc} B</td>
+                <td>$${rev} B</td>
+                <td class="${v.ttm_net_income_usd > 0 ? 'text-success' : 'text-danger'}" style="font-weight:600;">$${net} B</td>
+                <td style="font-weight:600;">${pe}</td>
+                <td>$${assets} B</td>
+                <td>$${equity} B</td>
+            `;
+            valBody.appendChild(tr);
+        });
+
+        // Populate Shopee Table
+        const shopeeBody = document.getElementById("shopeeTableBody");
+        quarters.forEach(q => {
+            const s = rawFinancials[q].segment_data.shopee;
+            const tr = document.createElement("tr");
+            const rev = (s.revenue / 1e3).toFixed(2);
+            const cost = (s.cost_of_revenue / 1e3).toFixed(2);
+            const gp = ((s.revenue + s.cost_of_revenue) / 1e3).toFixed(2);
+            const margin = ((s.revenue + s.cost_of_revenue) / s.revenue * 100).toFixed(2) + "%";
+            const sm = (s.sales_marketing / 1e3).toFixed(2);
+            const oi = (s.operating_income / 1e3).toFixed(2);
+            
+            tr.innerHTML = `
+                <td>${q.replace("_", " ")}</td>
+                <td>$${rev}</td>
+                <td class="text-danger">$${cost}</td>
+                <td class="text-success" style="font-weight:600;">$${gp}</td>
+                <td style="font-weight:600;">${margin}</td>
+                <td class="text-danger">$${sm}</td>
+                <td class="${s.operating_income >= 0 ? 'text-success' : 'text-danger'}" style="font-weight:600;">$${oi}</td>
+            `;
+            shopeeBody.appendChild(tr);
+        });
+
+        // Populate Monee Table
+        const moneeBody = document.getElementById("moneeTableBody");
+        quarters.forEach(q => {
+            const m = rawFinancials[q].segment_data.monee;
+            const tr = document.createElement("tr");
+            const rev = (m.revenue / 1e3).toFixed(2);
+            const cost = (m.cost_of_revenue / 1e3).toFixed(2);
+            const gp = ((m.revenue + m.cost_of_revenue) / 1e3).toFixed(2);
+            const margin = ((m.revenue + m.cost_of_revenue) / m.revenue * 100).toFixed(2) + "%";
+            const sm = (m.sales_marketing / 1e3).toFixed(2);
+            const prov = (m.credit_losses / 1e3).toFixed(2);
+            const oi = (m.operating_income / 1e3).toFixed(2);
+            
+            tr.innerHTML = `
+                <td>${q.replace("_", " ")}</td>
+                <td>$${rev}</td>
+                <td class="text-danger">$${cost}</td>
+                <td class="text-success" style="font-weight:600;">$${gp}</td>
+                <td style="font-weight:600;">${margin}</td>
+                <td class="text-danger">$${sm}</td>
+                <td class="text-danger" style="font-weight:600;">$${prov}</td>
+                <td class="${m.operating_income >= 0 ? 'text-success' : 'text-danger'}" style="font-weight:600;">$${oi}</td>
+            `;
+            moneeBody.appendChild(tr);
+        });
+
+        // Populate Garena Table
+        const garenaBody = document.getElementById("garenaTableBody");
+        quarters.forEach(q => {
+            const g = rawFinancials[q].segment_data.garena;
+            const tr = document.createElement("tr");
+            const rev = (g.revenue / 1e3).toFixed(2);
+            const cost = (g.cost_of_revenue / 1e3).toFixed(2);
+            const gp = ((g.revenue + g.cost_of_revenue) / 1e3).toFixed(2);
+            const margin = ((g.revenue + g.cost_of_revenue) / g.revenue * 100).toFixed(2) + "%";
+            const sm = (g.sales_marketing / 1e3).toFixed(2);
+            const oi = (g.operating_income / 1e3).toFixed(2);
+            
+            tr.innerHTML = `
+                <td>${q.replace("_", " ")}</td>
+                <td>$${rev}</td>
+                <td class="text-danger">$${cost}</td>
+                <td class="text-success" style="font-weight:600;">$${gp}</td>
+                <td style="font-weight:600;">${margin}</td>
+                <td class="text-danger">$${sm}</td>
+                <td class="text-success" style="font-weight:600;">$${oi}</td>
+            `;
+            garenaBody.appendChild(tr);
+        });
+
+        // Populate Other Table
+        const otherBody = document.getElementById("otherTableBody");
+        quarters.forEach(q => {
+            const o = rawFinancials[q].segment_data.other;
+            const tr = document.createElement("tr");
+            const rev = (o.revenue / 1e3).toFixed(2);
+            const cost = (o.cost_of_revenue / 1e3).toFixed(2);
+            const gp = ((o.revenue + o.cost_of_revenue) / 1e3).toFixed(2);
+            const oi = (o.operating_income / 1e3).toFixed(2);
+            
+            tr.innerHTML = `
+                <td>${q.replace("_", " ")}</td>
+                <td>$${rev}</td>
+                <td class="text-danger">$${cost}</td>
+                <td class="text-success" style="font-weight:600;">$${gp}</td>
+                <td class="${o.operating_income >= 0 ? 'text-success' : 'text-danger'}" style="font-weight:600;">$${oi}</td>
+            `;
+            otherBody.appendChild(tr);
+        });
+
+        // Populate Group Table
+        const groupBody = document.getElementById("groupTableBody");
+        quarters.forEach(q => {
+            const tot = rawFinancials[q].segment_data.total;
+            const bs = rawFinancials[q].balance_sheet;
+            const tr = document.createElement("tr");
+            
+            const rev = (tot.revenue / 1e3).toFixed(2);
+            const cost = (rawFinancials[q].segment_data.shopee.cost_of_revenue + 
+                          rawFinancials[q].segment_data.monee.cost_of_revenue + 
+                          rawFinancials[q].segment_data.garena.cost_of_revenue);
+            const gp = (tot.revenue + cost);
+            const gp_m = (gp / 1e3).toFixed(2);
+            const cost_m = (cost / 1e3).toFixed(2);
+            
+            const oi = (tot.operating_income / 1e3).toFixed(2);
+            const net = (tot.net_income / 1e3).toFixed(2);
+            
+            const debt_ratio = bs.total_assets > 0 ? (bs.total_liabilities / bs.total_assets * 100).toFixed(2) + "%" : "-";
+            
+            tr.innerHTML = `
+                <td>${q.replace("_", " ")}</td>
+                <td>$${rev}</td>
+                <td class="text-danger">$${cost_m}</td>
+                <td class="text-success" style="font-weight:600;">$${gp_m}</td>
+                <td class="text-success" style="font-weight:600;">$${oi}</td>
+                <td class="${tot.net_income >= 0 ? 'text-success' : 'text-danger'}" style="font-weight:600;">$${net}</td>
+                <td>${debt_ratio}</td>
+            `;
+            groupBody.appendChild(tr);
+        });
+
+        // Tabs switcher logic
+        function switchTab(evt, tabId) {
+            const tabcontents = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabcontents.length; i++) {
+                tabcontents[i].style.display = "none";
+            }
+            const tablinks = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabId).style.display = "block";
+            evt.currentTarget.classList.add("active");
+        }
+
+        // --- Render Charts ---
+        
+        // Chart 1: Stock Price & P/E
+        const stockPeCtx = document.getElementById('stockPeChart').getContext('2d');
+        const peData = quarters.map(q => typeof valuationData[q].pe_ratio === "number" ? valuationData[q].pe_ratio : null);
+        
+        new Chart(stockPeCtx, {
+            type: 'bar',
+            data: {
+                labels: quarters.map(q => q.replace("_", " ")),
+                datasets: [
+                    {
+                        label: 'TTM P/E Ratio (右轴)',
+                        data: peData,
+                        backgroundColor: 'rgba(168, 85, 247, 0.3)',
+                        borderColor: 'var(--accent)',
+                        borderWidth: 1.5,
+                        yAxisID: 'yPE',
+                        order: 2
+                    },
+                    {
+                        label: '季度末收盘股价 (左轴, $)',
+                        data: quarters.map(q => valuationData[q].stock_price),
+                        type: 'line',
+                        borderColor: 'var(--primary)',
+                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: 'var(--primary)',
+                        pointHoverRadius: 6,
+                        yAxisID: 'yPrice',
+                        order: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'var(--text-main)', font: { family: 'Outfit' } }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'var(--text-muted)', font: { family: 'Outfit' } }
+                    },
+                    yPrice: {
+                        type: 'linear',
+                        position: 'left',
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'var(--text-muted)' },
+                        title: { display: true, text: '股价 ($)', color: 'var(--text-muted)' }
+                    },
+                    yPE: {
+                        type: 'linear',
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: { color: 'var(--text-muted)' },
+                        title: { display: true, text: 'P/E 倍数', color: 'var(--text-muted)' }
+                    }
+                }
+            }
+        });
+
+        // Chart 2: TTM Rev & Net Income
+        const revNetCtx = document.getElementById('revNetChart').getContext('2d');
+        new Chart(revNetCtx, {
+            type: 'line',
+            data: {
+                labels: quarters.map(q => q.replace("_", " ")),
+                datasets: [
+                    {
+                        label: 'TTM 总营收 ($ Billion)',
+                        data: quarters.map(q => valuationData[q].ttm_revenue_usd / 1e9),
+                        borderColor: 'var(--primary)',
+                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                        borderWidth: 3,
+                        yAxisID: 'yRev',
+                        fill: true
+                    },
+                    {
+                        label: 'TTM 净利润 ($ Billion)',
+                        data: quarters.map(q => valuationData[q].ttm_net_income_usd / 1e9),
+                        borderColor: 'var(--success)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        yAxisID: 'yNet'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'var(--text-main)', font: { family: 'Outfit' } }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'var(--text-muted)' }
+                    },
+                    yRev: {
+                        type: 'linear',
+                        position: 'left',
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'var(--text-muted)' },
+                        title: { display: true, text: '营收 ($ Billion)', color: 'var(--text-muted)' }
+                    },
+                    yNet: {
+                        type: 'linear',
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: { color: 'var(--text-muted)' },
+                        title: { display: true, text: '净利润 ($ Billion)', color: 'var(--text-muted)' }
+                    }
+                }
+            }
+        });
+
+        // Chart 3: Segment Revenue Stacked Bar
+        const segmentRevCtx = document.getElementById('segmentRevChart').getContext('2d');
+        new Chart(segmentRevCtx, {
+            type: 'bar',
+            data: {
+                labels: quarters.map(q => q.replace("_", " ")),
+                datasets: [
+                    {
+                        label: 'Shopee (电商)',
+                        data: quarters.map(q => rawFinancials[q].segment_data.shopee.revenue / 1e3),
+                        backgroundColor: 'rgba(14, 165, 233, 0.7)'
+                    },
+                    {
+                        label: 'Monee (数字金融)',
+                        data: quarters.map(q => rawFinancials[q].segment_data.monee.revenue / 1e3),
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)'
+                    },
+                    {
+                        label: 'Garena (数字娱乐)',
+                        data: quarters.map(q => rawFinancials[q].segment_data.garena.revenue / 1e3),
+                        backgroundColor: 'rgba(245, 158, 11, 0.7)'
+                    },
+                    {
+                        label: 'Other Services',
+                        data: quarters.map(q => rawFinancials[q].segment_data.other.revenue / 1e3),
+                        backgroundColor: 'rgba(148, 163, 184, 0.7)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'var(--text-main)', font: { family: 'Outfit' } }
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'var(--text-muted)' }
+                    },
+                    y: {
+                        stacked: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'var(--text-muted)' },
+                        title: { display: true, text: '营业收入 ($ Million)', color: 'var(--text-muted)' }
+                    }
+                }
+            }
+        });
+
+        // Chart 4: Segment Operating Income Grouped Bar
+        const segmentOiCtx = document.getElementById('segmentOiChart').getContext('2d');
+        new Chart(segmentOiCtx, {
+            type: 'bar',
+            data: {
+                labels: quarters.map(q => q.replace("_", " ")),
+                datasets: [
+                    {
+                        label: 'Shopee (电商)',
+                        data: quarters.map(q => rawFinancials[q].segment_data.shopee.operating_income / 1e3),
+                        backgroundColor: 'rgba(14, 165, 233, 0.8)',
+                        borderColor: 'var(--primary)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Monee (数字金融)',
+                        data: quarters.map(q => rawFinancials[q].segment_data.monee.operating_income / 1e3),
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: 'var(--success)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Garena (数字娱乐)',
+                        data: quarters.map(q => rawFinancials[q].segment_data.garena.operating_income / 1e3),
+                        backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                        borderColor: 'var(--warning)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'var(--text-main)', font: { family: 'Outfit' } }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'var(--text-muted)' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: 'var(--text-muted)' },
+                        title: { display: true, text: '营业利润 ($ Million)', color: 'var(--text-muted)' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
