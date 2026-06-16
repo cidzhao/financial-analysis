@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Sea Limited 业务板块财务分析报告 (2025 Q2 - 2026 Q1)</title>
+    <!-- 引入 ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --primary: #3b82f6;
+            --shopee: #f97316;
+            --monee: #10b981;
+            --garena: #ef4444;
+            --other: #8b5cf6;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .chart-box {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            height: 400px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 30px;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .card h2 {
+            margin-top: 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            font-size: 1.5rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px 6px;
+            text-align: right;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        th:first-child, td:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+        th {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .qoq {
+            font-size: 0.8rem;
+            margin-left: 4px;
+        }
+        .positive { color: #10b981; }
+        .negative { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sea Limited 业务板块财务分析</h1>
+            <p>包含 Shopee, Monee, Garena 和 其他业务的季度环比 (单位: 亿美元)</p>
+            <p style="font-size: 0.9rem; color: #94a3b8;">注: Shopee 业务数据已包含商品销售对应的营收及成本。</p>
+        </div>
+        
+        <!-- 图表区 -->
+        <div class="charts-container">
+            <div class="chart-box" id="revenueChart"></div>
+            <div class="chart-box" id="opIncomeChart"></div>
+            <div class="chart-box" id="grossMarginChart" style="grid-column: 1 / -1;"></div>
+        </div>
+
+        <!-- 数据表格区 -->
+        <div class="grid">
+
+            <div class="card">
+                <h2 style="color: var(--shopee)">Shopee (电商及商品销售)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>指标</th>
+                            <th>2025 Q2</th>
+                            <th>2025 Q3</th>
+                            <th>2025 Q4</th>
+                            <th>2026 Q1</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>总营收</td>
+                            <td>37.73</td><td>42.97<br><span class="qoq positive">(+13.9%)</span></td><td>49.77<br><span class="qoq positive">(+15.8%)</span></td><td>51.15<br><span class="qoq positive">(+2.8%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>成本</td>
+                            <td>25.52</td><td>30.27<br><span class="qoq positive">(+18.6%)</span></td><td>34.98<br><span class="qoq positive">(+15.6%)</span></td><td>35.80<br><span class="qoq positive">(+2.3%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>毛利润</td>
+                            <td>12.21</td><td>12.70<br><span class="qoq positive">(+4.0%)</span></td><td>14.79<br><span class="qoq positive">(+16.5%)</span></td><td>15.35<br><span class="qoq positive">(+3.8%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>毛利率</td>
+                            <td>32.4%</td><td>29.6%<br><span class="qoq negative">(-2.8pts)</span></td><td>29.7%<br><span class="qoq positive">(+0.2pts)</span></td><td>30.0%<br><span class="qoq positive">(+0.3pts)</span></td>
+                        </tr>
+                        <tr>
+                            <td>销售营销费用</td>
+                            <td>8.03</td><td>8.95<br><span class="qoq positive">(+11.5%)</span></td><td>10.71<br><span class="qoq positive">(+19.7%)</span></td><td>10.92<br><span class="qoq positive">(+2.0%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>营业利润</td>
+                            <td>1.55</td><td>1.10<br><span class="qoq negative">(-29.0%)</span></td><td>1.21<br><span class="qoq positive">(+10.0%)</span></td><td>1.39<br><span class="qoq positive">(+14.9%)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 10px; text-align: right;">注: 表格内带有颜色的百分比表示该项指标的环比增速 (QoQ)。</p>
+            </div>
+        
+            <div class="card">
+                <h2 style="color: var(--monee)">Monee (数字金融服务)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>指标</th>
+                            <th>2025 Q2</th>
+                            <th>2025 Q3</th>
+                            <th>2025 Q4</th>
+                            <th>2026 Q1</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>总营收</td>
+                            <td>8.83</td><td>9.90<br><span class="qoq positive">(+12.1%)</span></td><td>11.32<br><span class="qoq positive">(+14.3%)</span></td><td>12.42<br><span class="qoq positive">(+9.7%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>成本</td>
+                            <td>1.16</td><td>1.26<br><span class="qoq positive">(+8.6%)</span></td><td>1.27<br><span class="qoq positive">(+0.8%)</span></td><td>1.43<br><span class="qoq positive">(+12.6%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>毛利润</td>
+                            <td>7.67</td><td>8.64<br><span class="qoq positive">(+12.6%)</span></td><td>10.05<br><span class="qoq positive">(+16.3%)</span></td><td>10.99<br><span class="qoq positive">(+9.4%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>毛利率</td>
+                            <td>86.9%</td><td>87.3%<br><span class="qoq positive">(+0.4pts)</span></td><td>88.8%<br><span class="qoq positive">(+1.5pts)</span></td><td>88.5%<br><span class="qoq negative">(-0.3pts)</span></td>
+                        </tr>
+                        <tr>
+                            <td>销售营销费用</td>
+                            <td>1.23</td><td>1.58<br><span class="qoq positive">(+28.5%)</span></td><td>2.37<br><span class="qoq positive">(+50.0%)</span></td><td>2.32<br><span class="qoq negative">(-2.1%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>营业利润</td>
+                            <td>2.43</td><td>2.48<br><span class="qoq positive">(+2.1%)</span></td><td>2.53<br><span class="qoq positive">(+2.0%)</span></td><td>2.66<br><span class="qoq positive">(+5.1%)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 10px; text-align: right;">注: 表格内带有颜色的百分比表示该项指标的环比增速 (QoQ)。</p>
+            </div>
+        
+            <div class="card">
+                <h2 style="color: var(--garena)">Garena (数字娱乐)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>指标</th>
+                            <th>2025 Q2</th>
+                            <th>2025 Q3</th>
+                            <th>2025 Q4</th>
+                            <th>2026 Q1</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>总营收</td>
+                            <td>5.59</td><td>6.53<br><span class="qoq positive">(+16.8%)</span></td><td>7.01<br><span class="qoq positive">(+7.4%)</span></td><td>6.97<br><span class="qoq negative">(-0.6%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>成本</td>
+                            <td>1.72</td><td>2.24<br><span class="qoq positive">(+30.2%)</span></td><td>2.14<br><span class="qoq negative">(-4.5%)</span></td><td>2.16<br><span class="qoq positive">(+0.9%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>毛利润</td>
+                            <td>3.87</td><td>4.29<br><span class="qoq positive">(+10.9%)</span></td><td>4.87<br><span class="qoq positive">(+13.5%)</span></td><td>4.81<br><span class="qoq negative">(-1.2%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>毛利率</td>
+                            <td>69.2%</td><td>65.7%<br><span class="qoq negative">(-3.5pts)</span></td><td>69.5%<br><span class="qoq positive">(+3.8pts)</span></td><td>69.0%<br><span class="qoq negative">(-0.5pts)</span></td>
+                        </tr>
+                        <tr>
+                            <td>销售营销费用</td>
+                            <td>0.43</td><td>0.51<br><span class="qoq positive">(+18.6%)</span></td><td>0.51<br><span class="qoq ">(0.0%)</span></td><td>0.45<br><span class="qoq negative">(-11.8%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>营业利润</td>
+                            <td>2.75</td><td>3.10<br><span class="qoq positive">(+12.7%)</span></td><td>3.79<br><span class="qoq positive">(+22.3%)</span></td><td>3.64<br><span class="qoq negative">(-4.0%)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 10px; text-align: right;">注: 表格内带有颜色的百分比表示该项指标的环比增速 (QoQ)。</p>
+            </div>
+        
+            <div class="card">
+                <h2 style="color: var(--other)">Other (其他服务)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>指标</th>
+                            <th>2025 Q2</th>
+                            <th>2025 Q3</th>
+                            <th>2025 Q4</th>
+                            <th>2026 Q1</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>总营收</td>
+                            <td>0.45</td><td>0.46<br><span class="qoq positive">(+2.2%)</span></td><td>0.42<br><span class="qoq negative">(-8.7%)</span></td><td>0.44<br><span class="qoq positive">(+4.8%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>成本</td>
+                            <td>0.10</td><td>0.09<br><span class="qoq negative">(-10.0%)</span></td><td>0.14<br><span class="qoq positive">(+55.6%)</span></td><td>0.13<br><span class="qoq negative">(-7.1%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>毛利润</td>
+                            <td>0.35</td><td>0.37<br><span class="qoq positive">(+5.7%)</span></td><td>0.28<br><span class="qoq negative">(-24.3%)</span></td><td>0.31<br><span class="qoq positive">(+10.7%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>毛利率</td>
+                            <td>77.8%</td><td>80.4%<br><span class="qoq positive">(+2.7pts)</span></td><td>66.7%<br><span class="qoq negative">(-13.8pts)</span></td><td>70.5%<br><span class="qoq positive">(+3.8pts)</span></td>
+                        </tr>
+                        <tr>
+                            <td>销售营销费用</td>
+                            <td>0.40</td><td>0.46<br><span class="qoq positive">(+15.0%)</span></td><td>0.43<br><span class="qoq negative">(-6.5%)</span></td><td>0.46<br><span class="qoq positive">(+7.0%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>营业利润</td>
+                            <td>-0.16</td><td>-0.27<br><span class="qoq negative">(-68.8%)</span></td><td>-0.37<br><span class="qoq negative">(-37.0%)</span></td><td>-0.32<br><span class="qoq positive">(+13.5%)</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 10px; text-align: right;">注: 表格内带有颜色的百分比表示该项指标的环比增速 (QoQ)。</p>
+            </div>
+        
+        </div>
+    </div>
+    
+    <script>
+        const quarters = ["2025 Q2", "2025 Q3", "2025 Q4", "2026 Q1"];
+        const metrics = {"Shopee": {"Revenue": [37.73, 42.97, 49.769999999999996, 51.15], "Cost": [25.52, 30.270000000000003, 34.98, 35.8], "GrossProfit": [12.209999999999997, 12.699999999999996, 14.79, 15.350000000000001], "GrossMargin": [0.32361516034985416, 0.29555503839888286, 0.297166968053044, 0.30009775171065495], "S&M": [8.03, 8.95, 10.71, 10.92], "OpIncome": [1.55, 1.1, 1.21, 1.39]}, "Monee": {"Revenue": [8.83, 9.9, 11.32, 12.42], "Cost": [1.16, 1.26, 1.27, 1.43], "GrossProfit": [7.67, 8.64, 10.05, 10.99], "GrossMargin": [0.8686296715741789, 0.8727272727272728, 0.887809187279152, 0.8848631239935588], "S&M": [1.23, 1.58, 2.37, 2.32], "OpIncome": [2.43, 2.48, 2.53, 2.66]}, "Garena": {"Revenue": [5.59, 6.53, 7.01, 6.97], "Cost": [1.72, 2.24, 2.14, 2.16], "GrossProfit": [3.87, 4.29, 4.869999999999999, 4.81], "GrossMargin": [0.6923076923076923, 0.6569678407350689, 0.69472182596291, 0.6901004304160688], "S&M": [0.43, 0.51, 0.51, 0.45], "OpIncome": [2.75, 3.1, 3.79, 3.64]}, "Other": {"Revenue": [0.45, 0.46, 0.42, 0.44], "Cost": [0.1, 0.09, 0.14, 0.13], "GrossProfit": [0.35, 0.37, 0.27999999999999997, 0.31], "GrossMargin": [0.7777777777777777, 0.8043478260869564, 0.6666666666666666, 0.7045454545454546], "S&M": [0.4, 0.46, 0.43, 0.46], "OpIncome": [-0.16, -0.27, -0.37, -0.32]}};
+        
+        // 1. Revenue Chart
+        const revChart = echarts.init(document.getElementById('revenueChart'));
+        revChart.setOption({
+            title: { text: '各板块总营收 (亿美元)', left: 'center' },
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+            legend: { bottom: 0 },
+            grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+            xAxis: { type: 'category', data: quarters },
+            yAxis: { type: 'value' },
+            series: [
+                { name: 'Shopee', type: 'bar', stack: 'total', itemStyle: { color: '#f97316' }, data: metrics.Shopee.Revenue },
+                { name: 'Monee', type: 'bar', stack: 'total', itemStyle: { color: '#10b981' }, data: metrics.Monee.Revenue },
+                { name: 'Garena', type: 'bar', stack: 'total', itemStyle: { color: '#ef4444' }, data: metrics.Garena.Revenue },
+                { name: 'Other', type: 'bar', stack: 'total', itemStyle: { color: '#8b5cf6' }, data: metrics.Other.Revenue }
+            ]
+        });
+
+        // 2. Operating Income Chart
+        const opChart = echarts.init(document.getElementById('opIncomeChart'));
+        opChart.setOption({
+            title: { text: '各板块营业利润 (亿美元)', left: 'center' },
+            tooltip: { trigger: 'axis' },
+            legend: { bottom: 0 },
+            grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+            xAxis: { type: 'category', data: quarters },
+            yAxis: { type: 'value' },
+            series: [
+                { name: 'Shopee', type: 'line', marker: 'circle', itemStyle: { color: '#f97316' }, data: metrics.Shopee.OpIncome },
+                { name: 'Monee', type: 'line', marker: 'circle', itemStyle: { color: '#10b981' }, data: metrics.Monee.OpIncome },
+                { name: 'Garena', type: 'line', marker: 'circle', itemStyle: { color: '#ef4444' }, data: metrics.Garena.OpIncome },
+                { name: 'Other', type: 'line', marker: 'circle', itemStyle: { color: '#8b5cf6' }, data: metrics.Other.OpIncome }
+            ]
+        });
+
+        // 3. Gross Margin Chart
+        const gmChart = echarts.init(document.getElementById('grossMarginChart'));
+        gmChart.setOption({
+            title: { text: '各板块毛利率变化', left: 'center' },
+            tooltip: { 
+                trigger: 'axis',
+                valueFormatter: (value) => (value * 100).toFixed(1) + '%'
+            },
+            legend: { bottom: 0 },
+            grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+            xAxis: { type: 'category', data: quarters },
+            yAxis: { 
+                type: 'value',
+                axisLabel: { formatter: (val) => (val * 100).toFixed(0) + '%' }
+            },
+            series: [
+                { name: 'Shopee', type: 'line', marker: 'circle', itemStyle: { color: '#f97316' }, data: metrics.Shopee.GrossMargin },
+                { name: 'Monee', type: 'line', marker: 'circle', itemStyle: { color: '#10b981' }, data: metrics.Monee.GrossMargin },
+                { name: 'Garena', type: 'line', marker: 'circle', itemStyle: { color: '#ef4444' }, data: metrics.Garena.GrossMargin }
+            ]
+        });
+
+        window.addEventListener('resize', function() {
+            revChart.resize();
+            opChart.resize();
+            gmChart.resize();
+        });
+    </script>
+</body>
+</html>
