@@ -1,0 +1,52 @@
+﻿Metric (EN),指标 (CN),2026 Q3,2026 Q2,2026 Q1,2025 Q4
+Revenue,营业收入,59.50,30.25,23.08,19.01
+Cost of Goods Sold,营业成本,12.88,14.84,16.21,14.03
+Gross Profit,毛利润,46.62,15.41,6.87,4.98
+Gross Margin,毛利率,78.35%,50.94%,29.77%,26.20%
+Research and Development (R&D) Expenses,研发费用,3.37,3.27,3.16,2.85
+"Selling, General and Administrative (SG&A) Expenses",销售与管理费用,1.61,1.39,1.79,1.62
+Other Operating Items (Net),其他营业收支,0.53,0.10,0.16,0.33
+Operating Profit,营业利润,41.11,10.65,1.76,0.18
+Operating Margin,营业利润率,69.09%,35.21%,7.63%,0.95%
+Net Financial Profit/Loss,净金融损益,0.06,-0.13,-0.24,-0.30
+Net F/X Transaction & Translation P/L,净外汇交易与折算损益,0.00,0.00,0.00,0.00
+Jointly Controlled Entities & Associates,联营及合营企业损益,0.00,0.00,0.00,0.00
+Others Non-Operating,其他非营业损益,-0.10,-1.15,-0.28,-0.06
+Income Before Tax,税前利润,41.07,9.37,1.24,-0.18
+Tax Expense/Benefit,所得税费用/收益,4.92,1.34,0.12,0.05
+Net Profit,净利润,36.15,8.03,1.12,-0.23
+Depreciation & Amortization,折旧与摊销,0.38,0.38,0.36,0.36
+EBITDA,息税折旧摊销前利润,41.49,11.03,2.12,0.54
+Operating Cash Flow,经营活动现金流,30.38,10.19,4.88,0.94
+Capital Expenditures (CapEx),资本支出,0.45,0.39,0.50,0.45
+Free Cash Flow,自由现金流,29.93,9.80,4.38,0.49
+Basic Shares Outstanding,basic发行股数,1.48,1.47,1.46,1.45
+Diluted Shares Outstanding,稀释发行股数,1.57,1.56,1.49,1.45
+Basic EPS,基本每股收益,24.43,5.46,0.77,-0.16
+Diluted EPS,稀释每股收益,23.03,5.15,0.75,-0.16
+
+--- BALANCE SHEET METRICS ---,--- 资产负债表财务指标 ---,,,,
+Cash & Cash Equivalents,现金及现金等价物,14.81,14.81,14.81,14.81
+Accounts Receivables,应收账款,10.68,10.68,10.68,10.68
+Inventories,存货,20.79,20.79,20.79,20.79
+Current Assets,流动资产合计,50.86,50.86,50.86,50.86
+"Property, Plant & Equipment",物业、厂房及设备(净额),6.19,6.19,6.19,6.19
+Intangible Assets,无形资产,0.00,0.00,0.00,0.00
+Non-Current Assets,非流动资产合计,78.99,78.99,78.99,78.99
+Total Assets,总资产,129.85,129.85,129.85,129.85
+S-T Borrowings,短期有息负债,0.20,0.20,0.20,0.20
+Current Portion of Long-term Borrowings,一年内到期的长期有息负债,0.00,0.00,0.00,0.00
+Bonds,应付债券,0.00,0.00,0.00,0.00
+L-T Borrowings,长期有息负债,18.29,18.29,18.29,18.29
+Interest-bearing Debt,有息负债总计,18.49,18.49,18.49,18.49
+Accounts Payables,应付账款,7.66,7.66,7.66,7.66
+Total Liabilities,总负债,37.69,37.69,37.69,37.69
+Capital Stock,股本,0.01,0.01,0.01,0.01
+Capital Surplus,资本公积,112.48,112.48,112.48,112.48
+Retained Earnings,留存收益,-17.84,-17.84,-17.84,-17.84
+Total Shareholders Equity,股东权益总额,92.16,92.16,92.16,92.16
+Debt-to-Equity Ratio,有息负债率,20.06%,20.06%,20.06%,20.06%
+Net Debt-to-Equity Ratio,净有息负债率,3.99%,3.99%,3.99%,3.99%
+
+--- SEGMENT & OPERATIONAL DRIVERS ---,--- 部门与运营变动指标 ---,,,,
+NAND Bit Growth QoQ,NAND出货量环比增幅,Up over 100%,Up significant%,Slipped slightly,Up low-single digit%
