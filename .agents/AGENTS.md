@@ -82,6 +82,3 @@ Always include a footnotes section containing:
 1. **Currency rates used** (average and/or ending rates).
 2. **Formulas and definitions** (e.g., EBITDA calculation, debt definitions).
 3. **Important adjustments or anomalies** (e.g., non-operating items, R&D treatment in SG&A).
-
-### C. CSV File (Save local copy)
-Write a copy of the extracted table into the corresponding company's subdirectory as `[company_name]_financial_analysis.csv` matching the schema exactly.
