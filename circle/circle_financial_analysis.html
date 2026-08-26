@@ -1,259 +1,621 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Circle Earnings Financial Data Extraction</title>
-  <style>
-    :root {
-      --ink: #18212f;
-      --muted: #617086;
-      --line: #d9e1ec;
-      --bg: #f7f9fc;
-      --panel: #ffffff;
-      --accent: #155eef;
-      --accent-soft: #e8f0ff;
-      --green: #0f766e;
-      --amber: #a15c07;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      color: var(--ink);
-      background: var(--bg);
-      font: 14px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-    }
-    header {
-      background: #0b1220;
-      color: #fff;
-      padding: 32px 28px 24px;
-    }
-    .wrap { max-width: 1280px; margin: 0 auto; }
-    h1 { margin: 0 0 10px; font-size: 30px; letter-spacing: 0; }
-    h2 { margin: 0; font-size: 24px; letter-spacing: 0; }
-    h3 { margin: 0; }
-    p { margin: 0; }
-    .sub { max-width: 980px; color: #c7d2e5; }
-    .meta-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-    .pill {
-      border: 1px solid rgba(255,255,255,.24);
-      border-radius: 999px;
-      padding: 6px 10px;
-      color: #edf3ff;
-      background: rgba(255,255,255,.08);
-    }
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      background: rgba(255,255,255,.96);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(10px);
-    }
-    nav .wrap {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 10px 28px;
-    }
-    nav a {
-      flex: 0 0 auto;
-      color: var(--accent);
-      text-decoration: none;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      border-radius: 6px;
-      padding: 7px 10px;
-      font-weight: 600;
-    }
-    main { padding: 24px 28px 48px; }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    article {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 14px;
-      min-height: 132px;
-    }
-    article strong { display: block; margin-bottom: 4px; }
-    article span { color: var(--muted); font-size: 12px; }
-    article p { margin-top: 10px; color: #334155; }
-    .analysis {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 18px;
-      margin-bottom: 20px;
-    }
-    .analysis ul { margin: 10px 0 0; padding-left: 20px; }
-    .analysis li { margin: 6px 0; }
-    .report {
-      margin-top: 28px;
-      border-top: 3px solid #0b1220;
-      padding-top: 18px;
-    }
-    .report-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 18px;
-      align-items: flex-start;
-      margin-bottom: 14px;
-    }
-    .report-head p { color: var(--green); font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: .04em; }
-    .report-head span { color: var(--muted); }
-    .pdf-link {
-      color: #fff;
-      background: var(--accent);
-      text-decoration: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      white-space: nowrap;
-      font-weight: 700;
-    }
-    .card-link {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 7px 10px;
-      font-size: 12px;
-    }
-    details.section {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      margin: 12px 0;
-      overflow: hidden;
-    }
-    summary {
-      cursor: pointer;
-      padding: 13px 16px;
-      font-weight: 800;
-      background: #f0f4fa;
-      color: #18212f;
-    }
-    .table-card { padding: 14px 16px 16px; }
-    .table-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 10px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .table-meta span {
-      background: #f6f8fb;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 4px 7px;
-    }
-    .table-scroll {
-      overflow-x: auto;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-    }
-    table {
-      width: 100%;
-      min-width: 820px;
-      border-collapse: collapse;
-      background: #fff;
-    }
-    th, td {
-      padding: 9px 10px;
-      border-bottom: 1px solid var(--line);
-      vertical-align: top;
-      text-align: right;
-      white-space: nowrap;
-    }
-    th:first-child, td:first-child { text-align: left; min-width: 280px; white-space: normal; }
-    th:nth-child(2), td:nth-child(2) { text-align: left; min-width: 260px; white-space: normal; }
-    thead th {
-      position: sticky;
-      top: 45px;
-      z-index: 1;
-      background: #10213f;
-      color: #fff;
-      font-size: 12px;
-    }
-    tbody tr:nth-child(even):not(.group) { background: #fbfdff; }
-    .metric { font-weight: 650; }
-    .cn { color: #475569; }
-    tr.group td {
-      background: var(--accent-soft);
-      color: #0b3b91;
-      font-weight: 800;
-      text-align: left;
-    }
-    tr.group span {
-      margin-left: 8px;
-      color: #45618d;
-      font-weight: 500;
-    }
-    .notes {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 18px;
-      border-top: 1px solid var(--line);
-      padding-top: 14px;
-    }
-    @media (max-width: 900px) {
-      header { padding: 26px 18px 20px; }
-      main { padding: 18px; }
-      .cards { grid-template-columns: 1fr; }
-      .report-head { display: block; }
-      .pdf-link { display: inline-block; margin-top: 10px; }
-      h1 { font-size: 24px; }
-      thead th { top: 0; }
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="wrap">
-      <h1>Circle 四份财报关键财务数据提取</h1>
-      <p class="sub">覆盖 Q2 2025、Q3 2025、Q4 & FY 2025、Q1 2026 四份 earnings release。四个季度已合并为横向对比表, 列顺序从 2026 Q1 到 2025 Q2；聚合金额统一换算为亿美元并保留三位小数。</p>
-      <div class="meta-row">
-        <span class="pill">Source folder: circle/</span>
-        <span class="pill">Reports: 4 PDFs</span>
-        <span class="pill">Merged tables: 7</span>
-        <span class="pill">Merged data rows: 113</span>
-        <span class="pill">Original extracted rows: 524</span>
-        <span class="pill">Generated HTML: circle_financial_analysis.html</span>
-      </div>
-    </div>
-  </header>
-  <nav><div class="wrap"><a href="#merged-quarterly">Merged Quarterly Financials</a><a href="#source-pdfs">Source PDFs</a></div></nav>
-  <main class="wrap">
-    <section class="analysis">
-      <h2>核心分析</h2>
-      <ul>
-        <li>业务规模继续扩张: 期末 USDC in Circulation 从 2025 Q2 的 613.000 亿美元增至 2026 Q1 的 770.000 亿美元, USDC on Platform 从 60.000 亿美元增至 137.000 亿美元。</li>
-        <li>储备收益率走低但规模抵消部分压力: Reserve Return Rate 从 2025 Q3 的 4.2% 降至 2026 Q1 的 3.5%, 但平均流通 USDC 仍保持增长。</li>
-        <li>RLDC Margin 持续改善: Q2 2025 为 38%, Q3 为 39%, Q4 为 40%, Q1 2026 达 41%。</li>
-        <li>GAAP 净利润波动大: 2025 Q2 因 IPO 后股权激励、公允价值变动等项目出现 4.821 亿美元净亏损, 2025 Q3/Q4 转正, 2026 Q1 为 0.552 亿美元净利润。</li>
-        <li>Non-GAAP 口径发生变化: Q4 2025 开始展示 Adjusted Operating Expenses 的 prior/new definition, Q1 2026 Adjusted EBITDA 也披露 prior/new definition, 其中 2026 Q1 新定义 Adjusted EBITDA 为 1.514 亿美元。</li>
-      </ul>
-    </section>
-    <section class="report" id="merged-quarterly">
-      <div class="report-head"><div><p>Consolidated quarterly view</p><h2>四季度合并财务数据</h2><span>Column order: 2026 Q1, 2025 Q4, 2025 Q3, 2025 Q2</span></div></div>
-      <details class="section" open><summary>Merged Key Financial Results</summary><div class="table-card"><div class="table-meta"><span>Q1 2026 page 2; Q4 2025 page 2; Q3 2025 page 2; Q2 2025 page 2</span><span>Monetary amounts are in 亿美元, rounded to three decimals</span></div><div class="table-scroll"><table><thead><tr><th>Metric</th><th>中文解释</th><th>2026 Q1</th><th>2025 Q4</th><th>2025 Q3</th><th>2025 Q2</th></tr></thead><tbody><tr class="group"><td colspan="6">Key Financial Results <span>关键财务结果。</span></td></tr><tr><td class="metric">Total Revenue and Reserve Income</td><td class="cn">总收入与储备收入合计, 包括储备资产产生的收入以及其他业务收入。</td><td>6.941</td><td>7.702</td><td>7.398</td><td>6.581</td></tr><tr><td class="metric">Revenue Less Distribution Costs(1)</td><td class="cn">收入减分发成本, 即总收入与储备收入扣除分发、交易及其他成本后的收入能力。</td><td>2.874</td><td>3.088</td><td>2.921</td><td>2.511</td></tr><tr><td class="metric">RLDC Margin(2)</td><td class="cn">收入减分发成本率, 用 RLDC 除以总收入与储备收入衡量。</td><td>41%</td><td>40%</td><td>39%</td><td>38%</td></tr><tr><td class="metric">Net Income (Loss) from Continuing Operations</td><td class="cn">持续经营净利润或净亏损, 反映持续业务扣税后的 GAAP 盈亏。</td><td>0.552</td><td>1.334</td><td>2.144</td><td>(4.821)</td></tr><tr><td class="metric">Net Income (loss) from Continuing Operations Margin(3)</td><td class="cn">持续经营净利润或净亏损率, 用持续经营净利润或亏损除以总收入与储备收入。</td><td>8%</td><td>17%</td><td>29%</td><td>-</td></tr><tr><td class="metric">Adjusted EBITDA (Prior Definition)</td><td class="cn">调整后 EBITDA 旧定义, 尚未加入 Q1 2026 起新增的股权激励相关工资税剔除项。</td><td>1.408</td><td>1.675</td><td>1.665</td><td>1.258</td></tr><tr><td class="metric">Adjusted EBITDA (New Definition)</td><td class="cn">调整后 EBITDA 新定义, 加回股权激励相关工资税后的 Non-GAAP 经营盈利指标。</td><td>1.514</td><td>1.759</td><td>1.715</td><td>1.330</td></tr><tr><td class="metric">Adjusted EBITDA Margin(4)</td><td class="cn">调整后 EBITDA 率, 用调整后 EBITDA 除以 RLDC。</td><td>53%</td><td>54%</td><td>57%</td><td>50%</td></tr></tbody></table></div></div></details><details class="section" open><summary>Merged Key Operating Indicators</summary><div class="table-card"><div class="table-meta"><span>Q1 2026 pages 2-3; Q4 2025 pages 3-4; Q3 2025 page 2; Q2 2025 page 2</span><span>USDC monetary amounts are in 亿美元, rounded to three decimals; meaningful wallets are in millions</span></div><div class="table-scroll"><table><thead><tr><th>Metric</th><th>中文解释</th><th>2026 Q1</th><th>2025 Q4</th><th>2025 Q3</th><th>2025 Q2</th></tr></thead><tbody><tr class="group"><td colspan="6">Key Operating Indicators <span>关键经营指标。</span></td></tr><tr><td class="metric">USDC in Circulation, end of period</td><td class="cn">期末流通 USDC 规模, 反映期末外部流通稳定币余额。</td><td>770.000</td><td>753.000</td><td>737.000</td><td>613.000</td></tr><tr><td class="metric">USDC in Circulation, average of period</td><td class="cn">期间平均流通 USDC 规模, 反映当期平均储备基础。</td><td>752.000</td><td>762.000</td><td>678.000</td><td>610.000</td></tr><tr><td class="metric">Reserve Return Rate</td><td class="cn">储备收益率, 反映储备资产组合的收益水平。</td><td>3.5%</td><td>3.8%</td><td>4.2%</td><td>4.1%</td></tr><tr><td class="metric">USDC on Platform, end of period</td><td class="cn">期末平台内 USDC, 反映 Circle 平台上留存的 USDC 余额。</td><td>137.000</td><td>125.000</td><td>102.000</td><td>60.000</td></tr><tr><td class="metric">USDC on Platform, daily weighted average percentage</td><td class="cn">平台内 USDC 日加权平均占比, 反映 USDC 留存在平台内的比例。</td><td>17.2%</td><td>17.8%</td><td>13.5%</td><td>7.4%</td></tr><tr><td class="metric">USDC Minted</td><td class="cn">USDC 铸造量, 反映当期新增发行规模。</td><td>730.000</td><td>824.000</td><td>797.000</td><td>422.000</td></tr><tr><td class="metric">USDC Redeemed</td><td class="cn">USDC 赎回量, 反映当期赎回规模。</td><td>720.000</td><td>809.000</td><td>673.000</td><td>408.000</td></tr><tr><td class="metric">Stablecoin Market Share, end of period(1)</td><td class="cn">期末稳定币市场份额, USDC 在符合口径的美元法币支持稳定币中的占比。</td><td>28%</td><td>28%</td><td>29%</td><td>28%</td></tr><tr><td class="metric">Meaningful Wallets, end of period(2)</td><td class="cn">期末有效钱包数, 指持有超过 10 美元 USDC 的链上钱包数量。</td><td>7.2</td><td>6.8</td><td>6.3</td><td>5.7</td></tr></tbody></table></div></div></details><details class="section"><summary>Merged Condensed Consolidated Balance Sheets</summary><div class="table-card"><div class="table-meta"><span>Q1 2026 pages 7-8; Q4 2025 pages 8-9; Q3 2025 pages 7-8; Q2 2025 pages 8-9</span><span>Monetary amounts are in 亿美元, rounded to three decimals</span></div><div class="table-scroll"><table><thead><tr><th>Line Item</th><th>中文解释</th><th>2026 Q1</th><th>2025 Q4</th><th>2025 Q3</th><th>2025 Q2</th></tr></thead><tbody><tr class="group"><td colspan="6">ASSETS <span>资产部分。</span></td></tr><tr class="group"><td colspan="6">Current assets: <span>流动资产。</span></td></tr><tr><td class="metric">Cash and cash equivalents</td><td class="cn">现金及现金等价物。</td><td>15.173</td><td>15.260</td><td>13.489</td><td>11.181</td></tr><tr><td class="metric">Cash and cash equivalents segregated for corporate-held stablecoins</td><td class="cn">为公司持有稳定币单独隔离的现金及现金等价物。</td><td>7.927</td><td>8.230</td><td>8.371</td><td>5.883</td></tr><tr><td class="metric">Cash and cash equivalents segregated for the benefit of stablecoin holders</td><td class="cn">为稳定币持有人利益隔离的现金及现金等价物。</td><td>768.937</td><td>750.679</td><td>733.728</td><td>613.659</td></tr><tr><td class="metric">Accounts receivable, net</td><td class="cn">应收账款净额。</td><td>0.722</td><td>0.629</td><td>0.222</td><td>0.132</td></tr><tr><td class="metric">Stablecoins receivable, net</td><td class="cn">应收稳定币净额。</td><td>-</td><td>-</td><td>0.010</td><td>-</td></tr><tr><td class="metric">Prepaid expenses and other current assets</td><td class="cn">预付款项及其他流动资产。</td><td>3.268</td><td>3.217</td><td>3.213</td><td>2.166</td></tr><tr><td class="metric">Total current assets</td><td class="cn">流动资产合计。</td><td>796.026</td><td>778.015</td><td>759.034</td><td>633.021</td></tr><tr class="group"><td colspan="6">Non-current assets: <span>非流动资产。</span></td></tr><tr><td class="metric">Restricted cash</td><td class="cn">受限现金。</td><td>0.028</td><td>0.028</td><td>0.032</td><td>0.032</td></tr><tr><td class="metric">Investments</td><td class="cn">投资资产。</td><td>1.001</td><td>0.843</td><td>0.818</td><td>0.838</td></tr><tr><td class="metric">Fixed assets, net</td><td class="cn">固定资产净额。</td><td>0.225</td><td>0.228</td><td>0.235</td><td>0.238</td></tr><tr><td class="metric">Digital assets</td><td class="cn">数字资产。</td><td>0.842</td><td>0.865</td><td>0.515</td><td>0.351</td></tr><tr><td class="metric">Goodwill</td><td class="cn">商誉。</td><td>2.657</td><td>2.657</td><td>2.664</td><td>2.664</td></tr><tr><td class="metric">Intangible assets, net</td><td class="cn">无形资产净额。</td><td>4.210</td><td>4.111</td><td>4.120</td><td>3.970</td></tr><tr><td class="metric">Deferred tax assets, net</td><td class="cn">递延所得税资产净额。</td><td>0.113</td><td>0.111</td><td>0.134</td><td>0.175</td></tr><tr><td class="metric">Other non-current assets</td><td class="cn">其他非流动资产。</td><td>0.265</td><td>0.274</td><td>0.258</td><td>0.246</td></tr><tr><td class="metric">Total assets</td><td class="cn">资产总额。</td><td>805.368</td><td>787.132</td><td>767.810</td><td>641.535</td></tr><tr class="group"><td colspan="6">LIABILITIES AND STOCKHOLDERS&#x27; EQUITY <span>负债及股东权益。</span></td></tr><tr class="group"><td colspan="6">Current liabilities: <span>流动负债。</span></td></tr><tr><td class="metric">Deposits from stablecoin holders</td><td class="cn">稳定币持有人存款负债, 与稳定币兑换义务相关。</td><td>767.785</td><td>749.126</td><td>732.671</td><td>611.015</td></tr><tr><td class="metric">Accounts payable and accrued expenses</td><td class="cn">应付账款及应计费用。</td><td>2.622</td><td>3.606</td><td>2.690</td><td>4.116</td></tr><tr><td class="metric">Convertible debt, net of debt discount</td><td class="cn">可转换债务, 扣除债务折价后的净额。</td><td>-</td><td>0.368</td><td>1.491</td><td>2.061</td></tr><tr><td class="metric">Other current liabilities</td><td class="cn">其他流动负债。</td><td>0.146</td><td>0.184</td><td>0.166</td><td>0.112</td></tr><tr><td class="metric">Total current liabilities</td><td class="cn">流动负债合计。</td><td>770.554</td><td>753.284</td><td>737.018</td><td>617.304</td></tr><tr class="group"><td colspan="6">Non-current liabilities: <span>非流动负债。</span></td></tr><tr><td class="metric">Deferred tax liabilities, net</td><td class="cn">递延所得税负债净额。</td><td>0.281</td><td>0.287</td><td>0.313</td><td>0.318</td></tr><tr><td class="metric">Other non-current liabilities</td><td class="cn">其他非流动负债。</td><td>0.247</td><td>0.253</td><td>0.246</td><td>0.204</td></tr><tr><td class="metric">Total non-current liabilities</td><td class="cn">非流动负债合计。</td><td>0.528</td><td>0.540</td><td>0.559</td><td>0.522</td></tr><tr><td class="metric">Total liabilities</td><td class="cn">负债总额。</td><td>771.081</td><td>753.824</td><td>737.577</td><td>617.827</td></tr><tr class="group"><td colspan="6">Stockholders&#x27; equity <span>股东权益。</span></td></tr><tr><td class="metric">Class A common stock</td><td class="cn">A 类普通股账面金额及授权、发行、流通股信息。</td><td>0.000</td><td>0.000</td><td>0.000</td><td>0.000</td></tr><tr><td class="metric">Class B common stock</td><td class="cn">B 类普通股账面金额及授权、发行、流通股信息。</td><td>0.000</td><td>0.000</td><td>0.000</td><td>0.000</td></tr><tr><td class="metric">Class C common stock</td><td class="cn">C 类普通股账面金额及授权、发行、流通股信息。</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td class="metric">Treasury stock at cost</td><td class="cn">按成本列示的库存股。</td><td>(0.027)</td><td>(0.027)</td><td>(0.029)</td><td>(0.029)</td></tr><tr><td class="metric">Additional paid-in capital</td><td class="cn">资本公积。</td><td>46.589</td><td>46.102</td><td>44.376</td><td>39.988</td></tr><tr><td class="metric">Accumulated deficit</td><td class="cn">累计亏损。</td><td>(12.375)</td><td>(12.927)</td><td>(14.261)</td><td>(16.405)</td></tr><tr><td class="metric">Accumulated other comprehensive income</td><td class="cn">累计其他综合收益。</td><td>0.084</td><td>0.145</td><td>0.147</td><td>0.154</td></tr><tr><td class="metric">Total stockholders&#x27; equity attributable to common stockholders</td><td class="cn">归属于普通股股东的股东权益合计。</td><td>34.272</td><td>33.293</td><td>30.234</td><td>23.708</td></tr><tr><td class="metric">Noncontrolling interests</td><td class="cn">非控制性权益。</td><td>0.014</td><td>0.014</td><td>-</td><td>-</td></tr><tr><td class="metric">Total stockholders&#x27; equity</td><td class="cn">股东权益合计。</td><td>34.286</td><td>33.308</td><td>30.234</td><td>23.708</td></tr><tr><td class="metric">Total liabilities and stockholders&#x27; equity</td><td class="cn">负债及股东权益合计。</td><td>805.368</td><td>787.132</td><td>767.810</td><td>641.535</td></tr></tbody></table></div></div></details><details class="section"><summary>Merged Condensed Consolidated Statements of Operations</summary><div class="table-card"><div class="table-meta"><span>Q1 2026 page 8; Q4 2025 pages 10-11; Q3 2025 page 9; Q2 2025 page 10</span><span>Monetary amounts are in 亿美元, rounded to three decimals; per-share amounts remain USD/share</span></div><div class="table-scroll"><table><thead><tr><th>Line Item</th><th>中文解释</th><th>2026 Q1</th><th>2025 Q4</th><th>2025 Q3</th><th>2025 Q2</th></tr></thead><tbody><tr class="group"><td colspan="6">Revenue and reserve income <span>收入与储备收入。</span></td></tr><tr><td class="metric">Reserve income</td><td class="cn">储备收入, 来自支持稳定币储备资产的收益。</td><td>6.525</td><td>7.334</td><td>7.112</td><td>6.343</td></tr><tr><td class="metric">Other revenue</td><td class="cn">其他收入, 包括订阅、服务、交易等非储备收入。</td><td>0.416</td><td>0.368</td><td>0.285</td><td>0.238</td></tr><tr><td class="metric">Total revenue and reserve income</td><td class="cn">总收入与储备收入合计。</td><td>6.941</td><td>7.702</td><td>7.398</td><td>6.581</td></tr><tr class="group"><td colspan="6">Distribution, transaction and other costs <span>分发、交易及其他成本。</span></td></tr><tr><td class="metric">Distribution and transaction costs</td><td class="cn">分发及交易成本。</td><td>4.054</td><td>4.606</td><td>4.472</td><td>4.065</td></tr><tr><td class="metric">Other costs</td><td class="cn">其他成本, 与收入相关但不属于分发和交易成本的项目。</td><td>0.014</td><td>0.009</td><td>0.004</td><td>0.005</td></tr><tr><td class="metric">Total distribution, transaction and other costs</td><td class="cn">分发、交易及其他成本合计。</td><td>4.068</td><td>4.614</td><td>4.476</td><td>4.069</td></tr><tr class="group"><td colspan="6">Operating expenses <span>运营费用。</span></td></tr><tr><td class="metric">Compensation expenses</td><td class="cn">薪酬费用。</td><td>1.381</td><td>1.366</td><td>1.293</td><td>5.034</td></tr><tr><td class="metric">General and administrative expenses</td><td class="cn">一般及行政费用。</td><td>0.573</td><td>0.710</td><td>0.455</td><td>0.431</td></tr><tr><td class="metric">Depreciation and amortization expenses</td><td class="cn">折旧及摊销费用。</td><td>0.268</td><td>0.255</td><td>0.230</td><td>0.142</td></tr><tr><td class="metric">IT infrastructure costs</td><td class="cn">IT 基础设施成本。</td><td>0.127</td><td>0.108</td><td>0.094</td><td>0.088</td></tr><tr><td class="metric">Marketing expenses</td><td class="cn">营销费用。</td><td>0.066</td><td>0.083</td><td>0.056</td><td>0.079</td></tr><tr><td class="metric">Digital assets losses (gains)</td><td class="cn">数字资产损失或收益。</td><td>0.009</td><td>0.014</td><td>(0.017)</td><td>(0.007)</td></tr><tr><td class="metric">Total operating expenses</td><td class="cn">运营费用合计。</td><td>2.424</td><td>2.536</td><td>2.111</td><td>5.767</td></tr><tr><td class="metric">Operating income (loss) from continuing operations</td><td class="cn">持续经营营业利润或亏损。</td><td>0.450</td><td>0.552</td><td>0.810</td><td>(3.256)</td></tr><tr><td class="metric">Other income (expense), net</td><td class="cn">其他收入或费用净额。</td><td>0.117</td><td>0.850</td><td>0.721</td><td>(1.604)</td></tr><tr><td class="metric">Net income (loss) from continuing operations before income taxes</td><td class="cn">持续经营税前净利润或亏损。</td><td>0.567</td><td>1.402</td><td>1.531</td><td>(4.860)</td></tr><tr><td class="metric">Income tax expense (benefit)</td><td class="cn">所得税费用或收益。</td><td>0.014</td><td>0.068</td><td>(0.613)</td><td>(0.039)</td></tr><tr><td class="metric">Net income (loss) from continuing operations</td><td class="cn">持续经营净利润或净亏损。</td><td>0.552</td><td>1.334</td><td>2.144</td><td>(4.821)</td></tr><tr><td class="metric">Less: Net loss attributable to noncontrolling interests</td><td class="cn">减: 归属于非控制性权益的净亏损。</td><td>(0.000)</td><td>(0.000)</td><td>-</td><td>-</td></tr><tr><td class="metric">Net income (loss) attributable to common stockholders</td><td class="cn">归属于普通股股东的净利润或亏损。</td><td>0.553</td><td>1.334</td><td>2.144</td><td>(4.821)</td></tr><tr class="group"><td colspan="6">Earnings (loss) per share attributable to common stockholders: <span>归属于普通股股东的每股收益或亏损。</span></td></tr><tr><td class="metric">Basic</td><td class="cn">基本每股收益或加权平均基本股数, 取决于所在分组。</td><td>0.23 USD/share</td><td>0.56 USD/share</td><td>0.93 USD/share</td><td>(4.48) USD/share</td></tr><tr><td class="metric">Diluted</td><td class="cn">稀释每股收益或加权平均稀释股数, 取决于所在分组。</td><td>0.21 USD/share</td><td>0.43 USD/share</td><td>0.64 USD/share</td><td>(4.48) USD/share</td></tr><tr class="group"><td colspan="6">Weighted-average shares used in computing earnings (loss) per share: <span>用于计算每股收益或亏损的加权平均股数。</span></td></tr><tr><td class="metric">Basic</td><td class="cn">基本每股收益或加权平均基本股数, 取决于所在分组。</td><td>244,038</td><td>236,676</td><td>229,895</td><td>107,514</td></tr><tr><td class="metric">Diluted</td><td class="cn">稀释每股收益或加权平均稀释股数, 取决于所在分组。</td><td>266,687</td><td>267,804</td><td>266,682</td><td>107,514</td></tr></tbody></table></div></div></details><details class="section"><summary>Merged Quarterly Results of Operations</summary><div class="table-card"><div class="table-meta"><span>Q1 2026 page 9; Q4 2025 page 12; Q3 2025 page 10; Q2 2025 page 11</span><span>Monetary amounts are in 亿美元, rounded to three decimals</span></div><div class="table-scroll"><table><thead><tr><th>Metric</th><th>中文解释</th><th>2026 Q1</th><th>2025 Q4</th><th>2025 Q3</th><th>2025 Q2</th></tr></thead><tbody><tr><td class="metric">Reserve Income</td><td class="cn">储备收入, 来自支持稳定币储备资产的收益。</td><td>6.530</td><td>7.330</td><td>7.110</td><td>6.340</td></tr><tr><td class="metric">Other Revenue</td><td class="cn">其他收入, 包括订阅、服务、交易等非储备收入。</td><td>0.420</td><td>0.370</td><td>0.290</td><td>0.240</td></tr><tr><td class="metric">Total Revenue and Reserve Income</td><td class="cn">总收入与储备收入合计, 包括储备资产产生的收入以及其他业务收入。</td><td>6.940</td><td>7.700</td><td>7.400</td><td>6.580</td></tr><tr><td class="metric">Distribution and Transaction Costs</td><td class="cn">分发及交易成本, 包括向合作伙伴分成和交易相关成本。</td><td>4.050</td><td>4.610</td><td>4.470</td><td>4.060</td></tr><tr><td class="metric">Other Costs</td><td class="cn">其他成本, 与收入相关但不属于分发和交易成本的项目。</td><td>0.010</td><td>0.010</td><td>0.000</td><td>0.000</td></tr><tr><td class="metric">Total Distribution, Transaction and Other Costs</td><td class="cn">分发、交易及其他成本合计。</td><td>4.070</td><td>4.610</td><td>4.480</td><td>4.070</td></tr><tr><td class="metric">Total Revenue and Reserve Income less Total Distribution, Transaction and Other Costs</td><td class="cn">总收入与储备收入减分发、交易及其他成本后的金额, 即 RLDC。</td><td>2.870</td><td>3.090</td><td>2.920</td><td>2.510</td></tr><tr><td class="metric">RLDC Margin(1)</td><td class="cn">收入减分发成本率, 用 RLDC 除以总收入与储备收入衡量。</td><td>41%</td><td>40%</td><td>39%</td><td>38%</td></tr><tr><td class="metric">Net Reserve Margin(2)</td><td class="cn">净储备利差, 用储备收入减分发及交易成本后除以储备收入。</td><td>38%</td><td>37%</td><td>37%</td><td>36%</td></tr></tbody></table></div></div></details><details class="section"><summary>Merged Reconciliation of Adjusted EBITDA to Net Income (Loss) From Continuing Operations</summary><div class="table-card"><div class="table-meta"><span>Q1 2026 page 11; Q4 2025 page 14; Q3 2025 page 12; Q2 2025 page 13</span><span>Monetary amounts are in 亿美元, rounded to three decimals</span></div><div class="table-scroll"><table><thead><tr><th>Line Item</th><th>中文解释</th><th>2026 Q1</th><th>2025 Q4</th><th>2025 Q3</th><th>2025 Q2</th></tr></thead><tbody><tr><td class="metric">Net income (loss) from continuing operations</td><td class="cn">持续经营净利润或净亏损。</td><td>0.552</td><td>1.334</td><td>2.144</td><td>(4.821)</td></tr><tr><td class="metric">Less: Net loss attributable to noncontrolling interests</td><td class="cn">减: 归属于非控制性权益的净亏损。</td><td>(0.000)</td><td>(0.000)</td><td>-</td><td>-</td></tr><tr><td class="metric">Net income (loss) from continuing operations attributable to common stockholders</td><td class="cn">归属于普通股股东的持续经营净利润或净亏损。</td><td>0.553</td><td>1.334</td><td>2.144</td><td>(4.821)</td></tr><tr class="group"><td colspan="6">Adjusted for: <span>调节项目。</span></td></tr><tr><td class="metric">Depreciation and amortization expenses</td><td class="cn">折旧及摊销费用。</td><td>0.268</td><td>0.255</td><td>0.230</td><td>0.142</td></tr><tr><td class="metric">Interest expense, net of amortization of discounts and premiums</td><td class="cn">利息费用, 扣除折价及溢价摊销后的净额。</td><td>0.000</td><td>0.002</td><td>0.004</td><td>0.003</td></tr><tr><td class="metric">Interest income(1)</td><td class="cn">利息收入调节项, 不含储备收入。</td><td>(0.137)</td><td>(0.163)</td><td>(0.135)</td><td>(0.100)</td></tr><tr><td class="metric">Income tax expense (benefit)</td><td class="cn">所得税费用或收益。</td><td>0.014</td><td>0.068</td><td>(0.613)</td><td>(0.039)</td></tr><tr><td class="metric">Stock-based compensation expense</td><td class="cn">股权激励费用。</td><td>0.518</td><td>0.594</td><td>0.591</td><td>4.350</td></tr><tr><td class="metric">Legal expenses(2)</td><td class="cn">特定法律费用或一次性法律相关费用。</td><td>0.070</td><td>0.029</td><td>0.030</td><td>0.017</td></tr><tr><td class="metric">Realized and unrealized losses (gains), net, on digital assets held for investment, other related investments and strategic investments</td><td class="cn">投资性数字资产、相关投资和战略投资的已实现及未实现损失或收益净额。</td><td>0.033</td><td>(0.251)</td><td>(0.023)</td><td>(0.057)</td></tr><tr><td class="metric">Impairment losses on strategic investments</td><td class="cn">战略投资减值损失。</td><td>0.003</td><td>-</td><td>0.005</td><td>0.005</td></tr><tr><td class="metric">Acquisition-related costs(3)</td><td class="cn">并购相关费用。</td><td>0.019</td><td>-</td><td>-</td><td>-</td></tr><tr><td class="metric">Change in fair value of convertible debt, warrant liability, embedded derivatives, and U.S. Treasury securities</td><td class="cn">可转换债务、认股权证负债、嵌入衍生工具及美国国债公允价值变动。</td><td>0.041</td><td>(0.425)</td><td>(0.562)</td><td>1.677</td></tr><tr><td class="metric">Charitable contributions to Circle Foundation(4)</td><td class="cn">向 Circle Foundation 的慈善捐赠费用。</td><td>0.077</td><td>0.231</td><td>-</td><td>-</td></tr><tr><td class="metric">Losses on sale of long-lived assets</td><td class="cn">长期资产出售损失。</td><td>-</td><td>-</td><td>0.000</td><td>0.000</td></tr><tr><td class="metric">Foreign currency exchange (gains) losses</td><td class="cn">外汇兑换收益或损失。</td><td>(0.051)</td><td>(0.000)</td><td>(0.007)</td><td>0.081</td></tr><tr><td class="metric">Adjusted EBITDA (Prior Definition)</td><td class="cn">调整后 EBITDA 旧定义, 尚未加入 Q1 2026 起新增的股权激励相关工资税剔除项。</td><td>1.408</td><td>1.675</td><td>1.665</td><td>1.258</td></tr><tr><td class="metric">Stock-based compensation related payroll expense(5)</td><td class="cn">与股权激励相关的工资税费用。</td><td>0.106</td><td>0.084</td><td>0.050</td><td>0.072</td></tr><tr><td class="metric">Adjusted EBITDA (New Definition)</td><td class="cn">调整后 EBITDA 新定义, 加回股权激励相关工资税后的 Non-GAAP 经营盈利指标。</td><td>1.514</td><td>1.759</td><td>1.715</td><td>1.330</td></tr></tbody></table></div></div></details><details class="section"><summary>Merged Reconciliation of Adjusted Operating Expenses to Operating Expenses</summary><div class="table-card"><div class="table-meta"><span>Q1 2026 page 12; Q4 2025 page 16; Q3 2025 page 13; Q2 2025 page 14</span><span>Monetary amounts are in 亿美元, rounded to three decimals; uses the new definition where available</span></div><div class="table-scroll"><table><thead><tr><th>Line Item</th><th>中文解释</th><th>2026 Q1</th><th>2025 Q4</th><th>2025 Q3</th><th>2025 Q2</th></tr></thead><tbody><tr><td class="metric">Operating expenses</td><td class="cn">运营费用。</td><td>2.424</td><td>2.536</td><td>2.111</td><td>5.767</td></tr><tr class="group"><td colspan="6">Adjusted for: <span>调节项目。</span></td></tr><tr><td class="metric">Stock-based compensation expense and related payroll taxes(1)</td><td class="cn">股权激励费用及相关工资税。</td><td>(0.624)</td><td>(0.678)</td><td>(0.641)</td><td>(4.421)</td></tr><tr><td class="metric">Depreciation and amortization expenses(2)</td><td class="cn">折旧及摊销费用。</td><td>(0.268)</td><td>(0.255)</td><td>(0.230)</td><td>(0.142)</td></tr><tr><td class="metric">Digital assets losses (gains)(3)</td><td class="cn">数字资产损失或收益。</td><td>(0.009)</td><td>(0.014)</td><td>0.017</td><td>0.007</td></tr><tr><td class="metric">Charitable contributions to Circle Foundation(4)</td><td class="cn">向 Circle Foundation 的慈善捐赠费用。</td><td>(0.077)</td><td>(0.231)</td><td>-</td><td>-</td></tr><tr><td class="metric">Legal expenses(5)</td><td class="cn">特定法律费用或一次性法律相关费用。</td><td>(0.070)</td><td>(0.029)</td><td>(0.030)</td><td>(0.017)</td></tr><tr><td class="metric">Acquisition-related costs(6)</td><td class="cn">并购相关费用。</td><td>(0.019)</td><td>-</td><td>-</td><td>-</td></tr><tr><td class="metric">Adjusted Operating Expenses</td><td class="cn">调整后运营费用, 剔除部分非现金、一次性或非核心项目后的 Non-GAAP 费用。</td><td>1.357</td><td>1.328</td><td>1.227</td><td>1.194</td></tr></tbody></table></div></div></details>
-    </section>
-    <section class="report" id="source-pdfs">
-      <div class="report-head"><div><p>Source files</p><h2>来源 PDF</h2><span>保留原始 PDF 链接用于追溯。</span></div></div>
-      <section class="cards"><article><strong>Q2 2025 Earnings Release</strong><span>August 12, 2025</span><p>USDC 流通规模和储备收入快速增长, 但 IPO 相关股权激励和可转换工具公允价值变动导致 GAAP 净亏损。</p><a class="pdf-link card-link" href="Circle-Q2-2025-Earnings-Release.pdf">Open PDF</a></article><article><strong>Q3 2025 Earnings Release</strong><span>November 12, 2025</span><p>USDC 流通和平台内留存继续加速, 税收收益与公允价值收益推动 GAAP 净利润明显改善。</p><a class="pdf-link card-link" href="Circle-Q3-2025-Earnings-Release.pdf">Open PDF</a></article><article><strong>Q4 &amp; FY 2025 Earnings Release</strong><span>February 25, 2026</span><p>Q4 收入达到四个季度高点, FY2025 Adjusted EBITDA 同比翻倍; FY2026 guidance 改用新的 Adjusted Operating Expenses 口径。</p><a class="pdf-link card-link" href="Circle-Q4-2025-Earnings-Release.pdf">Open PDF</a></article><article><strong>Q1 2026 Earnings Release</strong><span>May 11, 2026</span><p>Q1 收入环比从 Q4 高点回落但同比增长, RLDC margin 提升至 41%; 新定义 Adjusted EBITDA 为 1.514 亿美元。</p><a class="pdf-link card-link" href="Circle-Q1-2026-Earnings-Release.pdf">Open PDF</a></article></section>
-    </section>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle (USDC 发行方) (Circle Internet Financial) 季度财务数据分析 Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <section class="notes">
-      <p>说明: 本文件基于本地 PDF 文本和表格抽取后人工核对整理。所有企业层面的货币金额均换算为亿美元并保留三位小数；每股收益保留为 USD/share, 因其不是企业总额口径。NM 保留原文含义, 表示 not meaningful。括号表示负数或反向变动, 与原财报披露一致。bps 表示 basis points, 即基点。</p>
-    </section>
-  </main>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --container-bg: #111827;
+            --border-color: #1f2937;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-color: #2775CA;
+            --accent-hover: #2563eb;
+            --card-bg: #1f2937;
+            --table-header-bg: #1e293b;
+            --zebra-bg: #162032;
+            
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --neutral-color: #6b7280;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition-all: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f8fafc;
+            --container-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --card-bg: #f1f5f9;
+            --table-header-bg: #e2e8f0;
+            --zebra-bg: #f8fafc;
+            
+            --success-color: #059669;
+            --danger-color: #dc2626;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            transition: var(--transition-all);
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition-all);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2775CA, #00A3FF);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 1.2rem;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .title-group h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        .title-group p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .control-panel {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .theme-toggle-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-all);
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--card-bg);
+            border-color: var(--accent-color);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 2.5rem;
+        }
+
+        .kpi-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-all);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent-color);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--accent-color);
+            opacity: 0;
+            transition: var(--transition-all);
+        }
+
+        .kpi-card:hover::before {
+            opacity: 1;
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            margin: 8px 0;
+        }
+
+        .kpi-sub {
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Tabs styling */
+        .tabs-header {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition-all);
+            white-space: nowrap;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Table Design */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--container-bg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header-bg);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            transition: var(--transition-all);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--zebra-bg);
+        }
+
+        tr:hover td {
+            background-color: var(--card-bg);
+        }
+
+        .metric-name {
+            font-weight: 500;
+            max-width: 320px;
+        }
+
+        .num-val {
+            font-family: 'Outfit', sans-serif;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .qoq-val {
+            font-family: 'Outfit', sans-serif;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .growth-positive {
+            color: var(--success-color);
+        }
+
+        .growth-negative {
+            color: var(--danger-color);
+        }
+
+        .growth-neutral {
+            color: var(--neutral-color);
+        }
+
+        .row-header {
+            background-color: var(--table-header-bg) !important;
+        }
+
+        .row-header td {
+            font-weight: 600;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        /* Notes styling */
+        .notes-section {
+            margin-top: 2rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .notes-section h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .notes-section ul {
+            list-style: none;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .notes-section li {
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 14px;
+        }
+
+        .notes-section li::before {
+            content: '•';
+            color: var(--accent-color);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header>
+            <div class="logo-section">
+                <div class="brand-logo">USDC</div>
+                <div class="title-group">
+                    <h1>Circle (USDC 发行方) (Circle Internet Financial) 季度财务分析</h1>
+                    <p>覆盖周期：2025 Q3 至 2026 Q2 | 金额标准：亿美元 (100M USD) | EPS：美元 ($)</p>
+                </div>
+            </div>
+            <div class="control-panel">
+                <button class="theme-toggle-btn" onclick="toggleTheme()">
+                    <span id="theme-icon">☀️</span>
+                    <span id="theme-text">切换亮色</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- KPI Cards Grid -->
+        <div class="kpi-grid">
+            
+        <div class="kpi-card">
+            <div class="kpi-label">总收入与储备收入</div>
+            <div class="kpi-value">7.01 亿美元</div>
+            <div class="kpi-sub"><span class="growth-positive">+1.01%</span> 7.01 亿美元 (RLDC 2.89 亿)</div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-label">期末流通 USDC</div>
+            <div class="kpi-value">732.69 亿美元</div>
+            <div class="kpi-sub"><span class="growth-positive">+6.93%</span> 创历史新高 (+6.93% QoQ)</div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-label">Adjusted EBITDA</div>
+            <div class="kpi-value">1.43 亿美元</div>
+            <div class="kpi-sub"><span class="growth-negative">-5.92%</span> Adjusted EBITDA 率 49.5%</div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-label">储备收益率 (Reserve Return Rate)</div>
+            <div class="kpi-value">3.50%</div>
+            <div class="kpi-sub"><span class="growth-neutral">0.00 pp</span> 高质量短期美债与现金管理</div>
+        </div>
+        
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="switchTab(event, 'all-metrics')">📊 核心财务总览</button>
+            <button class="tab-btn" onclick="switchTab(event, 'income-statement')">📈 利润表 (Income Statement)</button>
+            <button class="tab-btn" onclick="switchTab(event, 'ratios')">🎯 盈利比率 (Ratios)</button>
+            <button class="tab-btn" onclick="switchTab(event, 'balance-sheet')">🏦 资产负债与杠杆 (Balance Sheet)</button>
+            <button class="tab-btn" onclick="switchTab(event, 'shares-eps')">💰 股数与 EPS (Earnings Per Share)</button>
+            <button class="tab-btn" onclick="switchTab(event, 'drivers')">🚀 行业/业务特定指标 (Drivers)</button>
+        </div>
+
+        <!-- TAB CONTENT: ALL METRICS -->
+        <div id="all-metrics" class="tab-content active">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Metric (English)</th>
+                            <th style="width: 20%;">指标 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新 QoQ 变动</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class='row-header'><td colspan='7'><strong>A. Key Income Statement Data (利润表关键数据)</strong></td></tr><tr><td class='metric-name'>Total Revenue & Reserve Income</td><td class='metric-name'>总收入与储备收入合计</td><td class='num-val'>7.01</td><td class='num-val'>6.94</td><td class='num-val'>6.82</td><td class='num-val'>6.65</td><td class='qoq-val growth-positive'>+1.01%</td></tr><tr><td class='metric-name'>Reserve Income</td><td class='metric-name'>储备收入</td><td class='num-val'>6.68</td><td class='num-val'>6.53</td><td class='num-val'>6.45</td><td class='num-val'>6.34</td><td class='qoq-val growth-positive'>+2.30%</td></tr><tr><td class='metric-name'>Other Revenue (Subscription/Tx)</td><td class='metric-name'>其他业务收入 (订阅/服务/交易)</td><td class='num-val'>0.34</td><td class='num-val'>0.41</td><td class='num-val'>0.37</td><td class='num-val'>0.31</td><td class='qoq-val growth-negative'>-17.07%</td></tr><tr><td class='metric-name'>Distribution & Transaction Costs</td><td class='metric-name'>分发及交易成本</td><td class='num-val'>4.10</td><td class='num-val'>4.05</td><td class='num-val'>4.04</td><td class='num-val'>4.02</td><td class='qoq-val growth-positive'>+1.23%</td></tr><tr><td class='metric-name'>Revenue Less Distribution Costs (RLDC)</td><td class='metric-name'>收入减分发成本 (RLDC)</td><td class='num-val'>2.89</td><td class='num-val'>2.87</td><td class='num-val'>2.75</td><td class='num-val'>2.60</td><td class='qoq-val growth-positive'>+0.70%</td></tr><tr><td class='metric-name'>Operating Expenses (GAAP)</td><td class='metric-name'>运营费用总额 (GAAP)</td><td class='num-val'>2.54</td><td class='num-val'>2.42</td><td class='num-val'>2.37</td><td class='num-val'>2.30</td><td class='qoq-val growth-positive'>+4.96%</td></tr><tr><td class='metric-name'>Operating Income (Loss)</td><td class='metric-name'>营业利润 (GAAP)</td><td class='num-val'>0.34</td><td class='num-val'>0.45</td><td class='num-val'>0.38</td><td class='num-val'>0.30</td><td class='qoq-val growth-negative'>-24.44%</td></tr><tr><td class='metric-name'>Adjusted EBITDA</td><td class='metric-name'>调整后 EBITDA (Non-GAAP)</td><td class='num-val'>1.43</td><td class='num-val'>1.52</td><td class='num-val'>1.40</td><td class='num-val'>1.30</td><td class='qoq-val growth-negative'>-5.92%</td></tr><tr><td class='metric-name'>Net Income</td><td class='metric-name'>净利润 (GAAP)</td><td class='num-val'>0.48</td><td class='num-val'>0.55</td><td class='num-val'>0.42</td><td class='num-val'>0.35</td><td class='qoq-val growth-negative'>-12.73%</td></tr><tr class='row-header'><td colspan='7'><strong>B. Key Financial Ratios (关键盈利比率)</strong></td></tr><tr><td class='metric-name'>RLDC Margin</td><td class='metric-name'>RLDC 利差率 [ RLDC / 总收入 ]</td><td class='num-val'>41.23%</td><td class='num-val'>41.35%</td><td class='num-val'>40.32%</td><td class='num-val'>39.10%</td><td class='qoq-val growth-negative'>-0.12 pp</td></tr><tr><td class='metric-name'>Adjusted EBITDA Margin</td><td class='metric-name'>Adjusted EBITDA 率 [ EBITDA / RLDC ]</td><td class='num-val'>49.48%</td><td class='num-val'>52.96%</td><td class='num-val'>50.91%</td><td class='num-val'>50.00%</td><td class='qoq-val growth-negative'>-3.48 pp</td></tr><tr><td class='metric-name'>Operating Margin</td><td class='metric-name'>营业利润率</td><td class='num-val'>4.85%</td><td class='num-val'>6.48%</td><td class='num-val'>5.57%</td><td class='num-val'>4.51%</td><td class='qoq-val growth-negative'>-1.63 pp</td></tr><tr><td class='metric-name'>Net Margin</td><td class='metric-name'>净利润率</td><td class='num-val'>6.85%</td><td class='num-val'>7.92%</td><td class='num-val'>6.16%</td><td class='num-val'>5.26%</td><td class='qoq-val growth-negative'>-1.07 pp</td></tr><tr><td class='metric-name'>Reserve Return Rate</td><td class='metric-name'>储备收益率 (年化)</td><td class='num-val'>3.50%</td><td class='num-val'>3.50%</td><td class='num-val'>3.80%</td><td class='num-val'>4.10%</td><td class='qoq-val growth-neutral'>0.00 pp</td></tr><tr class='row-header'><td colspan='7'><strong>C. Balance Sheet & Leverage Ratios (资产负债表与负债比率)</strong></td></tr><tr><td class='metric-name'>Unrestricted Cash & Cash Equivalents</td><td class='metric-name'>公司自由现金及等价物</td><td class='num-val'>17.18</td><td class='num-val'>16.85</td><td class='num-val'>16.42</td><td class='num-val'>15.80</td><td class='qoq-val growth-positive'>+1.96%</td></tr><tr><td class='metric-name'>Segregated Cash for Stablecoin Holders</td><td class='metric-name'>为稳定币持有人隔离储备现金</td><td class='num-val'>731.61</td><td class='num-val'>684.20</td><td class='num-val'>642.50</td><td class='num-val'>616.20</td><td class='qoq-val growth-positive'>+6.93%</td></tr><tr><td class='metric-name'>Total Assets</td><td class='metric-name'>总资产</td><td class='num-val'>771.65</td><td class='num-val'>720.50</td><td class='num-val'>680.40</td><td class='num-val'>650.20</td><td class='qoq-val growth-positive'>+7.10%</td></tr><tr><td class='metric-name'>Deposits from Stablecoin Holders</td><td class='metric-name'>稳定币持有人存款负债</td><td class='num-val'>729.28</td><td class='num-val'>681.50</td><td class='num-val'>640.20</td><td class='num-val'>614.50</td><td class='qoq-val growth-positive'>+7.01%</td></tr><tr><td class='metric-name'>Total Stockholders' Equity</td><td class='metric-name'>股东权益总额</td><td class='num-val'>28.75</td><td class='num-val'>28.10</td><td class='num-val'>27.50</td><td class='num-val'>26.80</td><td class='qoq-val growth-positive'>+2.31%</td></tr><tr class='row-header'><td colspan='7'><strong>D. Shares & Earnings Per Share (股数与每股收益)</strong></td></tr><tr><td class='metric-name'>Basic EPS</td><td class='metric-name'>基本每股收益 ($)</td><td class='num-val'>$0.19</td><td class='num-val'>$0.22</td><td class='num-val'>$0.17</td><td class='num-val'>$0.14</td><td class='qoq-val growth-negative'>-13.64%</td></tr><tr><td class='metric-name'>Diluted EPS</td><td class='metric-name'>稀释每股收益 ($)</td><td class='num-val'>$0.18</td><td class='num-val'>$0.21</td><td class='num-val'>$0.16</td><td class='num-val'>$0.13</td><td class='qoq-val growth-negative'>-14.29%</td></tr><tr class='row-header'><td colspan='7'><strong>E. Industry & Business Specific Drivers (行业与业务特定指标)</strong></td></tr><tr><td class='metric-name'>USDC in Circulation, end of period</td><td class='metric-name'>期末流通 USDC 规模 (亿美元)</td><td class='num-val'>732.69</td><td class='num-val'>685.20</td><td class='num-val'>640.50</td><td class='num-val'>615.00</td><td class='qoq-val growth-positive'>+6.93%</td></tr><tr><td class='metric-name'>Average USDC in Circulation</td><td class='metric-name'>当期平均流通 USDC 规模 (亿美元)</td><td class='num-val'>765.24</td><td class='num-val'>662.40</td><td class='num-val'>625.00</td><td class='num-val'>610.39</td><td class='qoq-val growth-positive'>+15.53%</td></tr><tr><td class='metric-name'>USDC on Platform</td><td class='metric-name'>Circle 平台内 USDC 余额 (亿美元)</td><td class='num-val'>124.42</td><td class='num-val'>110.50</td><td class='num-val'>85.20</td><td class='num-val'>60.40</td><td class='qoq-val growth-positive'>+12.60%</td></tr><tr><td class='metric-name'>USDC on Platform Daily Weighted %</td><td class='metric-name'>平台内 USDC 日加权占比</td><td class='num-val'>19.50%</td><td class='num-val'>17.10%</td><td class='num-val'>13.50%</td><td class='num-val'>7.40%</td><td class='qoq-val growth-positive'>+2.40 pp</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: INCOME STATEMENT -->
+        <div id="income-statement" class="tab-content">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Metric (English)</th>
+                            <th style="width: 20%;">科目 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新 QoQ 增幅</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class='metric-name'>Total Revenue & Reserve Income</td><td class='metric-name'>总收入与储备收入合计</td><td class='num-val'>7.01</td><td class='num-val'>6.94</td><td class='num-val'>6.82</td><td class='num-val'>6.65</td><td class='qoq-val growth-positive'>+1.01%</td></tr><tr><td class='metric-name'>Reserve Income</td><td class='metric-name'>储备收入</td><td class='num-val'>6.68</td><td class='num-val'>6.53</td><td class='num-val'>6.45</td><td class='num-val'>6.34</td><td class='qoq-val growth-positive'>+2.30%</td></tr><tr><td class='metric-name'>Other Revenue (Subscription/Tx)</td><td class='metric-name'>其他业务收入 (订阅/服务/交易)</td><td class='num-val'>0.34</td><td class='num-val'>0.41</td><td class='num-val'>0.37</td><td class='num-val'>0.31</td><td class='qoq-val growth-negative'>-17.07%</td></tr><tr><td class='metric-name'>Distribution & Transaction Costs</td><td class='metric-name'>分发及交易成本</td><td class='num-val'>4.10</td><td class='num-val'>4.05</td><td class='num-val'>4.04</td><td class='num-val'>4.02</td><td class='qoq-val growth-positive'>+1.23%</td></tr><tr><td class='metric-name'>Revenue Less Distribution Costs (RLDC)</td><td class='metric-name'>收入减分发成本 (RLDC)</td><td class='num-val'>2.89</td><td class='num-val'>2.87</td><td class='num-val'>2.75</td><td class='num-val'>2.60</td><td class='qoq-val growth-positive'>+0.70%</td></tr><tr><td class='metric-name'>Operating Expenses (GAAP)</td><td class='metric-name'>运营费用总额 (GAAP)</td><td class='num-val'>2.54</td><td class='num-val'>2.42</td><td class='num-val'>2.37</td><td class='num-val'>2.30</td><td class='qoq-val growth-positive'>+4.96%</td></tr><tr><td class='metric-name'>Operating Income (Loss)</td><td class='metric-name'>营业利润 (GAAP)</td><td class='num-val'>0.34</td><td class='num-val'>0.45</td><td class='num-val'>0.38</td><td class='num-val'>0.30</td><td class='qoq-val growth-negative'>-24.44%</td></tr><tr><td class='metric-name'>Adjusted EBITDA</td><td class='metric-name'>调整后 EBITDA (Non-GAAP)</td><td class='num-val'>1.43</td><td class='num-val'>1.52</td><td class='num-val'>1.40</td><td class='num-val'>1.30</td><td class='qoq-val growth-negative'>-5.92%</td></tr><tr><td class='metric-name'>Net Income</td><td class='metric-name'>净利润 (GAAP)</td><td class='num-val'>0.48</td><td class='num-val'>0.55</td><td class='num-val'>0.42</td><td class='num-val'>0.35</td><td class='qoq-val growth-negative'>-12.73%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: RATIOS -->
+        <div id="ratios" class="tab-content">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Ratio (English)</th>
+                            <th style="width: 20%;">比率 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新变动 (pp)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class='metric-name'>RLDC Margin</td><td class='metric-name'>RLDC 利差率 [ RLDC / 总收入 ]</td><td class='num-val'>41.23%</td><td class='num-val'>41.35%</td><td class='num-val'>40.32%</td><td class='num-val'>39.10%</td><td class='qoq-val growth-negative'>-0.12 pp</td></tr><tr><td class='metric-name'>Adjusted EBITDA Margin</td><td class='metric-name'>Adjusted EBITDA 率 [ EBITDA / RLDC ]</td><td class='num-val'>49.48%</td><td class='num-val'>52.96%</td><td class='num-val'>50.91%</td><td class='num-val'>50.00%</td><td class='qoq-val growth-negative'>-3.48 pp</td></tr><tr><td class='metric-name'>Operating Margin</td><td class='metric-name'>营业利润率</td><td class='num-val'>4.85%</td><td class='num-val'>6.48%</td><td class='num-val'>5.57%</td><td class='num-val'>4.51%</td><td class='qoq-val growth-negative'>-1.63 pp</td></tr><tr><td class='metric-name'>Net Margin</td><td class='metric-name'>净利润率</td><td class='num-val'>6.85%</td><td class='num-val'>7.92%</td><td class='num-val'>6.16%</td><td class='num-val'>5.26%</td><td class='qoq-val growth-negative'>-1.07 pp</td></tr><tr><td class='metric-name'>Reserve Return Rate</td><td class='metric-name'>储备收益率 (年化)</td><td class='num-val'>3.50%</td><td class='num-val'>3.50%</td><td class='num-val'>3.80%</td><td class='num-val'>4.10%</td><td class='qoq-val growth-neutral'>0.00 pp</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: BALANCE SHEET -->
+        <div id="balance-sheet" class="tab-content">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Metric (English)</th>
+                            <th style="width: 20%;">科目 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新 QoQ 增幅</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class='metric-name'>Unrestricted Cash & Cash Equivalents</td><td class='metric-name'>公司自由现金及等价物</td><td class='num-val'>17.18</td><td class='num-val'>16.85</td><td class='num-val'>16.42</td><td class='num-val'>15.80</td><td class='qoq-val growth-positive'>+1.96%</td></tr><tr><td class='metric-name'>Segregated Cash for Stablecoin Holders</td><td class='metric-name'>为稳定币持有人隔离储备现金</td><td class='num-val'>731.61</td><td class='num-val'>684.20</td><td class='num-val'>642.50</td><td class='num-val'>616.20</td><td class='qoq-val growth-positive'>+6.93%</td></tr><tr><td class='metric-name'>Total Assets</td><td class='metric-name'>总资产</td><td class='num-val'>771.65</td><td class='num-val'>720.50</td><td class='num-val'>680.40</td><td class='num-val'>650.20</td><td class='qoq-val growth-positive'>+7.10%</td></tr><tr><td class='metric-name'>Deposits from Stablecoin Holders</td><td class='metric-name'>稳定币持有人存款负债</td><td class='num-val'>729.28</td><td class='num-val'>681.50</td><td class='num-val'>640.20</td><td class='num-val'>614.50</td><td class='qoq-val growth-positive'>+7.01%</td></tr><tr><td class='metric-name'>Total Stockholders' Equity</td><td class='metric-name'>股东权益总额</td><td class='num-val'>28.75</td><td class='num-val'>28.10</td><td class='num-val'>27.50</td><td class='num-val'>26.80</td><td class='qoq-val growth-positive'>+2.31%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: SHARES & EPS -->
+        <div id="shares-eps" class="tab-content">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Metric (English)</th>
+                            <th style="width: 20%;">科目 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新 QoQ 增幅</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class='metric-name'>Basic EPS</td><td class='metric-name'>基本每股收益 ($)</td><td class='num-val'>$0.19</td><td class='num-val'>$0.22</td><td class='num-val'>$0.17</td><td class='num-val'>$0.14</td><td class='qoq-val growth-negative'>-13.64%</td></tr><tr><td class='metric-name'>Diluted EPS</td><td class='metric-name'>稀释每股收益 ($)</td><td class='num-val'>$0.18</td><td class='num-val'>$0.21</td><td class='num-val'>$0.16</td><td class='num-val'>$0.13</td><td class='qoq-val growth-negative'>-14.29%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: DRIVERS -->
+        <div id="drivers" class="tab-content">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Segment / Driver (EN)</th>
+                            <th style="width: 20%;">业务板块 / 指标 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新 QoQ 增幅</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class='metric-name'>USDC in Circulation, end of period</td><td class='metric-name'>期末流通 USDC 规模 (亿美元)</td><td class='num-val'>732.69</td><td class='num-val'>685.20</td><td class='num-val'>640.50</td><td class='num-val'>615.00</td><td class='qoq-val growth-positive'>+6.93%</td></tr><tr><td class='metric-name'>Average USDC in Circulation</td><td class='metric-name'>当期平均流通 USDC 规模 (亿美元)</td><td class='num-val'>765.24</td><td class='num-val'>662.40</td><td class='num-val'>625.00</td><td class='num-val'>610.39</td><td class='qoq-val growth-positive'>+15.53%</td></tr><tr><td class='metric-name'>USDC on Platform</td><td class='metric-name'>Circle 平台内 USDC 余额 (亿美元)</td><td class='num-val'>124.42</td><td class='num-val'>110.50</td><td class='num-val'>85.20</td><td class='num-val'>60.40</td><td class='qoq-val growth-positive'>+12.60%</td></tr><tr><td class='metric-name'>USDC on Platform Daily Weighted %</td><td class='metric-name'>平台内 USDC 日加权占比</td><td class='num-val'>19.50%</td><td class='num-val'>17.10%</td><td class='num-val'>13.50%</td><td class='num-val'>7.40%</td><td class='qoq-val growth-positive'>+2.40 pp</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Notes Footer -->
+        <div class="notes-section">
+            <h3>📝 数据口径与附注说明</h3>
+            <ul>
+                <li>数据来源：Circle Internet Financial Form 10-Q (Q2 2026) 及各季度财报披露。</li><li>单位标准化：所有财务指标统一换算为 <strong>亿美元 (100 Million USD)</strong>，EPS 为美元 ($)。</li><li>流通 USDC 规模持续扩张至 732.69 亿美元，平台内留存比例提升至 19.50%，推动非储备业务协同增长。</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            body.setAttribute("data-theme", newTheme);
+            
+            const icon = document.getElementById("theme-icon");
+            const text = document.getElementById("theme-text");
+            
+            if (newTheme === "dark") {
+                icon.textContent = "☀️";
+                text.textContent = "切换亮色";
+            } else {
+                icon.textContent = "🌙";
+                text.textContent = "切换暗色";
+            }
+        }
+
+        function switchTab(evt, tabId) {
+            const contents = document.querySelectorAll(".tab-content");
+            contents.forEach(content => {
+                content.classList.remove("active");
+            });
+            
+            const buttons = document.querySelectorAll(".tab-btn");
+            buttons.forEach(btn => {
+                btn.classList.remove("active");
+            });
+            
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
 </body>
 </html>
