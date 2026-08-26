@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>达美乐比萨 / Domino's (Domino's Pizza, Inc.) 季度财务数据分析 Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --container-bg: #111827;
+            --border-color: #1f2937;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-color: #006491;
+            --accent-hover: #2563eb;
+            --card-bg: #1f2937;
+            --table-header-bg: #1e293b;
+            --zebra-bg: #162032;
+            
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --neutral-color: #6b7280;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition-all: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f8fafc;
+            --container-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --card-bg: #f1f5f9;
+            --table-header-bg: #e2e8f0;
+            --zebra-bg: #f8fafc;
+            
+            --success-color: #059669;
+            --danger-color: #dc2626;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            transition: var(--transition-all);
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition-all);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #006491, #E31837);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 1.2rem;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .title-group h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        .title-group p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .control-panel {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .theme-toggle-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-all);
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--card-bg);
+            border-color: var(--accent-color);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 2.5rem;
+        }
+
+        .kpi-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-all);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent-color);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--accent-color);
+            opacity: 0;
+            transition: var(--transition-all);
+        }
+
+        .kpi-card:hover::before {
+            opacity: 1;
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            margin: 8px 0;
+        }
+
+        .kpi-sub {
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Tabs styling */
+        .tabs-header {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition-all);
+            white-space: nowrap;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        .tab-btn.active {
+            color: var(--accent-color);
+            border-bottom: 2px solid var(--accent-color);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Table Design */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--container-bg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--table-header-bg);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            transition: var(--transition-all);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--zebra-bg);
+        }
+
+        tr:hover td {
+            background-color: var(--card-bg);
+        }
+
+        .metric-name {
+            font-weight: 500;
+            max-width: 320px;
+        }
+
+        .num-val {
+            font-family: 'Outfit', sans-serif;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .qoq-val {
+            font-family: 'Outfit', sans-serif;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .growth-positive {
+            color: var(--success-color);
+        }
+
+        .growth-negative {
+            color: var(--danger-color);
+        }
+
+        .growth-neutral {
+            color: var(--neutral-color);
+        }
+
+        .row-header {
+            background-color: var(--table-header-bg) !important;
+        }
+
+        .row-header td {
+            font-weight: 600;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        /* Notes styling */
+        .notes-section {
+            margin-top: 2rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .notes-section h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .notes-section ul {
+            list-style: none;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .notes-section li {
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 14px;
+        }
+
+        .notes-section li::before {
+            content: '•';
+            color: var(--accent-color);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header>
+            <div class="logo-section">
+                <div class="brand-logo">DPZ</div>
+                <div class="title-group">
+                    <h1>达美乐比萨 / Domino's (Domino's Pizza, Inc.) 季度财务分析</h1>
+                    <p>覆盖周期：2025 Q3 至 2026 Q2 | 金额标准：亿美元 (100M USD) | EPS：美元 ($)</p>
+                </div>
+            </div>
+            <div class="control-panel">
+                <button class="theme-toggle-btn" onclick="toggleTheme()">
+                    <span id="theme-icon">☀️</span>
+                    <span id="theme-text">切换亮色</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- KPI Cards Grid -->
+        <div class="kpi-grid">
+            
+        <div class="kpi-card">
+            <div class="kpi-label">营业收入 (Total Revenues)</div>
+            <div class="kpi-value">11.94 亿美元</div>
+            <div class="kpi-sub"><span class="growth-positive">+3.74%</span> 供应链与特许经营稳健增长</div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-label">全球零售销售额 (Retail Sales)</div>
+            <div class="kpi-value">48.50 亿美元</div>
+            <div class="kpi-sub"><span class="growth-positive">+2.32%</span> 同店销售持续正增长</div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-label">营业利润 (Income from Ops)</div>
+            <div class="kpi-value">2.32 亿美元</div>
+            <div class="kpi-sub"><span class="growth-positive">+0.87%</span> 营业利润率 19.43%</div>
+        </div>
+        
+        <div class="kpi-card">
+            <div class="kpi-label">稀释每股收益 (Diluted EPS)</div>
+            <div class="kpi-value">$4.07</div>
+            <div class="kpi-sub"><span class="growth-negative">-1.69%</span> 现金流与股东回报强劲</div>
+        </div>
+        
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="switchTab(event, 'all-metrics')">📊 核心财务总览</button>
+            <button class="tab-btn" onclick="switchTab(event, 'income-statement')">📈 利润表 (Income Statement)</button>
+            <button class="tab-btn" onclick="switchTab(event, 'ratios')">🎯 盈利比率 (Ratios)</button>
+            <button class="tab-btn" onclick="switchTab(event, 'balance-sheet')">🏦 资产负债与杠杆 (Balance Sheet)</button>
+            <button class="tab-btn" onclick="switchTab(event, 'shares-eps')">💰 股数与 EPS (Earnings Per Share)</button>
+            <button class="tab-btn" onclick="switchTab(event, 'drivers')">🚀 行业/业务特定指标 (Drivers)</button>
+        </div>
+
+        <!-- TAB CONTENT: ALL METRICS -->
+        <div id="all-metrics" class="tab-content active">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Metric (English)</th>
+                            <th style="width: 20%;">指标 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新 QoQ 变动</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class='row-header'><td colspan='7'><strong>A. Key Income Statement Data (利润表关键数据)</strong></td></tr><tr><td class='metric-name'>Total Revenues</td><td class='metric-name'>营业收入总额</td><td class='num-val'>11.94</td><td class='num-val'>11.51</td><td class='num-val'>14.45</td><td class='num-val'>10.75</td><td class='qoq-val growth-positive'>+3.74%</td></tr><tr><td class='metric-name'>Supply Chain Revenues</td><td class='metric-name'>供应链业务收入</td><td class='num-val'>7.32</td><td class='num-val'>6.99</td><td class='num-val'>8.90</td><td class='num-val'>6.52</td><td class='qoq-val growth-positive'>+4.72%</td></tr><tr><td class='metric-name'>U.S. Franchise Royalties & Fees</td><td class='metric-name'>美国特许经营特许费及收益</td><td class='num-val'>1.64</td><td class='num-val'>1.58</td><td class='num-val'>1.85</td><td class='num-val'>1.45</td><td class='qoq-val growth-positive'>+3.80%</td></tr><tr><td class='metric-name'>U.S. Franchise Advertising</td><td class='metric-name'>美国特许经营广告收入</td><td class='num-val'>1.35</td><td class='num-val'>1.31</td><td class='num-val'>1.52</td><td class='num-val'>1.20</td><td class='qoq-val growth-positive'>+3.05%</td></tr><tr><td class='metric-name'>International Royalties & Fees</td><td class='metric-name'>国际特许经营特许费</td><td class='num-val'>0.82</td><td class='num-val'>0.81</td><td class='num-val'>0.95</td><td class='num-val'>0.75</td><td class='qoq-val growth-positive'>+1.23%</td></tr><tr><td class='metric-name'>Cost of Sales</td><td class='metric-name'>销售成本 (门店+供应链)</td><td class='num-val'>7.16</td><td class='num-val'>6.86</td><td class='num-val'>8.72</td><td class='num-val'>6.52</td><td class='qoq-val growth-positive'>+4.37%</td></tr><tr><td class='metric-name'>Gross Margin (Gross Profit)</td><td class='metric-name'>毛利润</td><td class='num-val'>4.78</td><td class='num-val'>4.64</td><td class='num-val'>5.73</td><td class='num-val'>4.23</td><td class='qoq-val growth-positive'>+3.02%</td></tr><tr><td class='metric-name'>General & Administrative (G&A)</td><td class='metric-name'>一般及行政费用</td><td class='num-val'>1.15</td><td class='num-val'>1.11</td><td class='num-val'>1.35</td><td class='num-val'>1.02</td><td class='qoq-val growth-positive'>+3.60%</td></tr><tr><td class='metric-name'>Income from Operations</td><td class='metric-name'>营业利润</td><td class='num-val'>2.32</td><td class='num-val'>2.30</td><td class='num-val'>2.85</td><td class='num-val'>2.05</td><td class='qoq-val growth-positive'>+0.87%</td></tr><tr><td class='metric-name'>Depreciation & Amortization (D&A)</td><td class='metric-name'>折旧与摊销</td><td class='num-val'>0.31</td><td class='num-val'>0.30</td><td class='num-val'>0.32</td><td class='num-val'>0.29</td><td class='qoq-val growth-positive'>+3.33%</td></tr><tr><td class='metric-name'>EBITDA</td><td class='metric-name'>息税折旧摊销前利润 [= 营业利润 + 折旧与摊销]</td><td class='num-val'>2.63</td><td class='num-val'>2.60</td><td class='num-val'>3.17</td><td class='num-val'>2.34</td><td class='qoq-val growth-positive'>+1.15%</td></tr><tr><td class='metric-name'>Interest Expense, net</td><td class='metric-name'>利息支出净额</td><td class='num-val'>0.44</td><td class='num-val'>0.44</td><td class='num-val'>0.45</td><td class='num-val'>0.41</td><td class='qoq-val growth-neutral'>0.00%</td></tr><tr><td class='metric-name'>Net Income</td><td class='metric-name'>净利润</td><td class='num-val'>1.36</td><td class='num-val'>1.39</td><td class='num-val'>1.72</td><td class='num-val'>1.25</td><td class='qoq-val growth-negative'>-2.16%</td></tr><tr class='row-header'><td colspan='7'><strong>B. Key Financial Ratios (关键盈利比率)</strong></td></tr><tr><td class='metric-name'>Gross Margin</td><td class='metric-name'>毛利率</td><td class='num-val'>40.03%</td><td class='num-val'>40.31%</td><td class='num-val'>39.65%</td><td class='num-val'>39.35%</td><td class='qoq-val growth-negative'>-0.28 pp</td></tr><tr><td class='metric-name'>Operating Margin</td><td class='metric-name'>营业利润率</td><td class='num-val'>19.43%</td><td class='num-val'>19.98%</td><td class='num-val'>19.72%</td><td class='num-val'>19.07%</td><td class='qoq-val growth-negative'>-0.55 pp</td></tr><tr><td class='metric-name'>EBITDA Margin</td><td class='metric-name'>EBITDA 利润率</td><td class='num-val'>22.03%</td><td class='num-val'>22.59%</td><td class='num-val'>21.94%</td><td class='num-val'>21.77%</td><td class='qoq-val growth-negative'>-0.56 pp</td></tr><tr><td class='metric-name'>Net Margin</td><td class='metric-name'>净利润率</td><td class='num-val'>11.39%</td><td class='num-val'>12.08%</td><td class='num-val'>11.90%</td><td class='num-val'>11.63%</td><td class='qoq-val growth-negative'>-0.69 pp</td></tr><tr class='row-header'><td colspan='7'><strong>C. Balance Sheet & Leverage Ratios (资产负债表与负债比率)</strong></td></tr><tr><td class='metric-name'>Cash, Equivalents & Restricted Cash</td><td class='metric-name'>现金与受限现金总计</td><td class='num-val'>3.53</td><td class='num-val'>3.42</td><td class='num-val'>3.42</td><td class='num-val'>3.15</td><td class='qoq-val growth-positive'>+3.22%</td></tr><tr><td class='metric-name'>Long-term Debt</td><td class='metric-name'>长期债务 (资产证券化债券)</td><td class='num-val'>49.17</td><td class='num-val'>49.15</td><td class='num-val'>49.10</td><td class='num-val'>49.00</td><td class='qoq-val growth-positive'>+0.04%</td></tr><tr><td class='metric-name'>Total Assets</td><td class='metric-name'>总资产</td><td class='num-val'>17.63</td><td class='num-val'>17.35</td><td class='num-val'>17.16</td><td class='num-val'>16.85</td><td class='qoq-val growth-positive'>+1.61%</td></tr><tr><td class='metric-name'>Total Stockholders' Deficit</td><td class='metric-name'>股东权益总额 (负债累积赤字)</td><td class='num-val'>-44.61</td><td class='num-val'>-44.80</td><td class='num-val'>-45.10</td><td class='num-val'>-45.50</td><td class='qoq-val growth-positive'>+0.42 pp</td></tr><tr class='row-header'><td colspan='7'><strong>D. Shares & Earnings Per Share (股数与每股收益)</strong></td></tr><tr><td class='metric-name'>Diluted Shares Outstanding</td><td class='metric-name'>稀释发行股数 (百万股)</td><td class='num-val'>33.35</td><td class='num-val'>33.58</td><td class='num-val'>35.25</td><td class='num-val'>34.25</td><td class='qoq-val growth-negative'>-0.68%</td></tr><tr><td class='metric-name'>Basic EPS</td><td class='metric-name'>基本每股收益 ($)</td><td class='num-val'>$4.09</td><td class='num-val'>$4.17</td><td class='num-val'>$4.92</td><td class='num-val'>$3.68</td><td class='qoq-val growth-negative'>-1.92%</td></tr><tr><td class='metric-name'>Diluted EPS</td><td class='metric-name'>稀释每股收益 ($)</td><td class='num-val'>$4.07</td><td class='num-val'>$4.14</td><td class='num-val'>$4.88</td><td class='num-val'>$3.65</td><td class='qoq-val growth-negative'>-1.69%</td></tr><tr class='row-header'><td colspan='7'><strong>E. Industry & Business Specific Drivers (行业与业务特定指标)</strong></td></tr><tr><td class='metric-name'>Global Retail Sales (Total)</td><td class='metric-name'>全球零售销售额 (亿美元)</td><td class='num-val'>48.50</td><td class='num-val'>47.40</td><td class='num-val'>59.20</td><td class='num-val'>44.50</td><td class='qoq-val growth-positive'>+2.32%</td></tr><tr><td class='metric-name'>U.S. Same Store Sales Growth</td><td class='metric-name'>美国同店销售增速</td><td class='num-val'>+3.2%</td><td class='num-val'>+3.0%</td><td class='num-val'>+3.6%</td><td class='num-val'>+3.0%</td><td class='qoq-val growth-positive'>+0.2 pp</td></tr><tr><td class='metric-name'>International Same Store Sales Growth</td><td class='metric-name'>国际同店销售增速</td><td class='num-val'>+2.8%</td><td class='num-val'>+2.5%</td><td class='num-val'>+3.1%</td><td class='num-val'>+2.2%</td><td class='qoq-val growth-positive'>+0.3 pp</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: INCOME STATEMENT -->
+        <div id="income-statement" class="tab-content">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Metric (English)</th>
+                            <th style="width: 20%;">科目 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新 QoQ 增幅</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class='metric-name'>Total Revenues</td><td class='metric-name'>营业收入总额</td><td class='num-val'>11.94</td><td class='num-val'>11.51</td><td class='num-val'>14.45</td><td class='num-val'>10.75</td><td class='qoq-val growth-positive'>+3.74%</td></tr><tr><td class='metric-name'>Supply Chain Revenues</td><td class='metric-name'>供应链业务收入</td><td class='num-val'>7.32</td><td class='num-val'>6.99</td><td class='num-val'>8.90</td><td class='num-val'>6.52</td><td class='qoq-val growth-positive'>+4.72%</td></tr><tr><td class='metric-name'>U.S. Franchise Royalties & Fees</td><td class='metric-name'>美国特许经营特许费及收益</td><td class='num-val'>1.64</td><td class='num-val'>1.58</td><td class='num-val'>1.85</td><td class='num-val'>1.45</td><td class='qoq-val growth-positive'>+3.80%</td></tr><tr><td class='metric-name'>U.S. Franchise Advertising</td><td class='metric-name'>美国特许经营广告收入</td><td class='num-val'>1.35</td><td class='num-val'>1.31</td><td class='num-val'>1.52</td><td class='num-val'>1.20</td><td class='qoq-val growth-positive'>+3.05%</td></tr><tr><td class='metric-name'>International Royalties & Fees</td><td class='metric-name'>国际特许经营特许费</td><td class='num-val'>0.82</td><td class='num-val'>0.81</td><td class='num-val'>0.95</td><td class='num-val'>0.75</td><td class='qoq-val growth-positive'>+1.23%</td></tr><tr><td class='metric-name'>Cost of Sales</td><td class='metric-name'>销售成本 (门店+供应链)</td><td class='num-val'>7.16</td><td class='num-val'>6.86</td><td class='num-val'>8.72</td><td class='num-val'>6.52</td><td class='qoq-val growth-positive'>+4.37%</td></tr><tr><td class='metric-name'>Gross Margin (Gross Profit)</td><td class='metric-name'>毛利润</td><td class='num-val'>4.78</td><td class='num-val'>4.64</td><td class='num-val'>5.73</td><td class='num-val'>4.23</td><td class='qoq-val growth-positive'>+3.02%</td></tr><tr><td class='metric-name'>General & Administrative (G&A)</td><td class='metric-name'>一般及行政费用</td><td class='num-val'>1.15</td><td class='num-val'>1.11</td><td class='num-val'>1.35</td><td class='num-val'>1.02</td><td class='qoq-val growth-positive'>+3.60%</td></tr><tr><td class='metric-name'>Income from Operations</td><td class='metric-name'>营业利润</td><td class='num-val'>2.32</td><td class='num-val'>2.30</td><td class='num-val'>2.85</td><td class='num-val'>2.05</td><td class='qoq-val growth-positive'>+0.87%</td></tr><tr><td class='metric-name'>Depreciation & Amortization (D&A)</td><td class='metric-name'>折旧与摊销</td><td class='num-val'>0.31</td><td class='num-val'>0.30</td><td class='num-val'>0.32</td><td class='num-val'>0.29</td><td class='qoq-val growth-positive'>+3.33%</td></tr><tr><td class='metric-name'>EBITDA</td><td class='metric-name'>息税折旧摊销前利润 [= 营业利润 + 折旧与摊销]</td><td class='num-val'>2.63</td><td class='num-val'>2.60</td><td class='num-val'>3.17</td><td class='num-val'>2.34</td><td class='qoq-val growth-positive'>+1.15%</td></tr><tr><td class='metric-name'>Interest Expense, net</td><td class='metric-name'>利息支出净额</td><td class='num-val'>0.44</td><td class='num-val'>0.44</td><td class='num-val'>0.45</td><td class='num-val'>0.41</td><td class='qoq-val growth-neutral'>0.00%</td></tr><tr><td class='metric-name'>Net Income</td><td class='metric-name'>净利润</td><td class='num-val'>1.36</td><td class='num-val'>1.39</td><td class='num-val'>1.72</td><td class='num-val'>1.25</td><td class='qoq-val growth-negative'>-2.16%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: RATIOS -->
+        <div id="ratios" class="tab-content">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Ratio (English)</th>
+                            <th style="width: 20%;">比率 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新变动 (pp)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class='metric-name'>Gross Margin</td><td class='metric-name'>毛利率</td><td class='num-val'>40.03%</td><td class='num-val'>40.31%</td><td class='num-val'>39.65%</td><td class='num-val'>39.35%</td><td class='qoq-val growth-negative'>-0.28 pp</td></tr><tr><td class='metric-name'>Operating Margin</td><td class='metric-name'>营业利润率</td><td class='num-val'>19.43%</td><td class='num-val'>19.98%</td><td class='num-val'>19.72%</td><td class='num-val'>19.07%</td><td class='qoq-val growth-negative'>-0.55 pp</td></tr><tr><td class='metric-name'>EBITDA Margin</td><td class='metric-name'>EBITDA 利润率</td><td class='num-val'>22.03%</td><td class='num-val'>22.59%</td><td class='num-val'>21.94%</td><td class='num-val'>21.77%</td><td class='qoq-val growth-negative'>-0.56 pp</td></tr><tr><td class='metric-name'>Net Margin</td><td class='metric-name'>净利润率</td><td class='num-val'>11.39%</td><td class='num-val'>12.08%</td><td class='num-val'>11.90%</td><td class='num-val'>11.63%</td><td class='qoq-val growth-negative'>-0.69 pp</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: BALANCE SHEET -->
+        <div id="balance-sheet" class="tab-content">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Metric (English)</th>
+                            <th style="width: 20%;">科目 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新 QoQ 增幅</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class='metric-name'>Cash, Equivalents & Restricted Cash</td><td class='metric-name'>现金与受限现金总计</td><td class='num-val'>3.53</td><td class='num-val'>3.42</td><td class='num-val'>3.42</td><td class='num-val'>3.15</td><td class='qoq-val growth-positive'>+3.22%</td></tr><tr><td class='metric-name'>Long-term Debt</td><td class='metric-name'>长期债务 (资产证券化债券)</td><td class='num-val'>49.17</td><td class='num-val'>49.15</td><td class='num-val'>49.10</td><td class='num-val'>49.00</td><td class='qoq-val growth-positive'>+0.04%</td></tr><tr><td class='metric-name'>Total Assets</td><td class='metric-name'>总资产</td><td class='num-val'>17.63</td><td class='num-val'>17.35</td><td class='num-val'>17.16</td><td class='num-val'>16.85</td><td class='qoq-val growth-positive'>+1.61%</td></tr><tr><td class='metric-name'>Total Stockholders' Deficit</td><td class='metric-name'>股东权益总额 (负债累积赤字)</td><td class='num-val'>-44.61</td><td class='num-val'>-44.80</td><td class='num-val'>-45.10</td><td class='num-val'>-45.50</td><td class='qoq-val growth-positive'>+0.42 pp</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: SHARES & EPS -->
+        <div id="shares-eps" class="tab-content">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Metric (English)</th>
+                            <th style="width: 20%;">科目 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新 QoQ 增幅</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class='metric-name'>Diluted Shares Outstanding</td><td class='metric-name'>稀释发行股数 (百万股)</td><td class='num-val'>33.35</td><td class='num-val'>33.58</td><td class='num-val'>35.25</td><td class='num-val'>34.25</td><td class='qoq-val growth-negative'>-0.68%</td></tr><tr><td class='metric-name'>Basic EPS</td><td class='metric-name'>基本每股收益 ($)</td><td class='num-val'>$4.09</td><td class='num-val'>$4.17</td><td class='num-val'>$4.92</td><td class='num-val'>$3.68</td><td class='qoq-val growth-negative'>-1.92%</td></tr><tr><td class='metric-name'>Diluted EPS</td><td class='metric-name'>稀释每股收益 ($)</td><td class='num-val'>$4.07</td><td class='num-val'>$4.14</td><td class='num-val'>$4.88</td><td class='num-val'>$3.65</td><td class='qoq-val growth-negative'>-1.69%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: DRIVERS -->
+        <div id="drivers" class="tab-content">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 20%;">Segment / Driver (EN)</th>
+                            <th style="width: 20%;">业务板块 / 指标 (中文)</th>
+                            <th style="text-align: right;">2026 Q2</th>
+                            <th style="text-align: right;">2026 Q1</th>
+                            <th style="text-align: right;">2025 Q4</th>
+                            <th style="text-align: right;">2025 Q3</th>
+                            <th style="text-align: right;">最新 QoQ 增幅</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class='metric-name'>Global Retail Sales (Total)</td><td class='metric-name'>全球零售销售额 (亿美元)</td><td class='num-val'>48.50</td><td class='num-val'>47.40</td><td class='num-val'>59.20</td><td class='num-val'>44.50</td><td class='qoq-val growth-positive'>+2.32%</td></tr><tr><td class='metric-name'>U.S. Same Store Sales Growth</td><td class='metric-name'>美国同店销售增速</td><td class='num-val'>+3.2%</td><td class='num-val'>+3.0%</td><td class='num-val'>+3.6%</td><td class='num-val'>+3.0%</td><td class='qoq-val growth-positive'>+0.2 pp</td></tr><tr><td class='metric-name'>International Same Store Sales Growth</td><td class='metric-name'>国际同店销售增速</td><td class='num-val'>+2.8%</td><td class='num-val'>+2.5%</td><td class='num-val'>+3.1%</td><td class='num-val'>+2.2%</td><td class='qoq-val growth-positive'>+0.3 pp</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Notes Footer -->
+        <div class="notes-section">
+            <h3>📝 数据口径与附注说明</h3>
+            <ul>
+                <li>数据来源：Domino's Pizza, Inc. SEC Form 10-Q (Q2 2026) 及历史财报文件。</li><li>单位标准化：所有财务指标统一换算为 <strong>亿美元 (100 Million USD)</strong>，EPS 为美元 ($)。</li><li>达美乐采用高度特许经营和全固定收益资产证券化资本结构，因而股东权益呈现负值（账面赤字），体现了极高的资本回报率与持续回购特征。</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            body.setAttribute("data-theme", newTheme);
+            
+            const icon = document.getElementById("theme-icon");
+            const text = document.getElementById("theme-text");
+            
+            if (newTheme === "dark") {
+                icon.textContent = "☀️";
+                text.textContent = "切换亮色";
+            } else {
+                icon.textContent = "🌙";
+                text.textContent = "切换暗色";
+            }
+        }
+
+        function switchTab(evt, tabId) {
+            const contents = document.querySelectorAll(".tab-content");
+            contents.forEach(content => {
+                content.classList.remove("active");
+            });
+            
+            const buttons = document.querySelectorAll(".tab-btn");
+            buttons.forEach(btn => {
+                btn.classList.remove("active");
+            });
+            
+            document.getElementById(tabId).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+</body>
+</html>
