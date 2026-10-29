@@ -209,6 +209,59 @@
             gap: 4px;
         }
 
+        .profit-bridge {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 1.25rem 1.35rem 1.1rem;
+            margin: -0.75rem 0 2.5rem;
+        }
+
+        .profit-bridge h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .profit-bridge p,
+        .profit-bridge li {
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        .profit-bridge p {
+            margin-bottom: 10px;
+        }
+
+        .profit-bridge .bridge-table {
+            margin: 10px 0 14px;
+        }
+
+        .profit-bridge table {
+            font-size: 0.82rem;
+        }
+
+        .profit-bridge th,
+        .profit-bridge td {
+            padding: 10px 14px;
+        }
+
+        .profit-bridge ul {
+            margin: 0 0 10px 1.1rem;
+        }
+
+        .profit-bridge li {
+            margin-bottom: 6px;
+        }
+
+        .profit-bridge strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
         /* Tabs styling */
         .tabs-header {
             display: flex;
@@ -420,7 +473,7 @@
         <div class="kpi-card">
             <div class="kpi-label">净利润 (Net Profit)</div>
             <div class="kpi-value">280.66 亿美元</div>
-            <div class="kpi-sub"><span class="growth-negative">-55.16%</span> 39.78 万亿韩元 (净利率 38.02%)</div>
+            <div class="kpi-sub"><span class="growth-negative">-55.16%</span> 39.78 万亿韩元 (净利率 38.02%，远低于营业利润，见下方差异说明)</div>
         </div>
         
         <div class="kpi-card">
@@ -430,6 +483,72 @@
         </div>
         
         </div>
+
+        <section class="profit-bridge" aria-label="Q3 营业利润到净利润差异说明">
+            <h3>Q3 营业利润 → 净利润 差异说明</h3>
+            <p>Q3 净利润 39.78 万亿韩元，不到营业利润 83.33 万亿韩元的一半。差额出在营业利润之下，不是内存主业的营业利润下降。下表数字均来自已存档的投资者关系演示材料 <code>SK_hynix_FY2026_Q3_Earnings_Release_ENG.pdf</code>（K-IFRS，初步数据）。美元按利润表同一汇率折算：FRED DEXKOUS 2026 Q3 均值 <strong>1 美元 = 1,417.24 韩元</strong>。每一行单独折算，所以美元相减可能与下一行差 0.01 亿美元。</p>
+            <div class="table-container bridge-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>桥接步骤（发布稿第 6 页）</th>
+                            <th style="text-align: right;">十亿韩元</th>
+                            <th style="text-align: right;">万亿韩元</th>
+                            <th style="text-align: right;">亿美元</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="metric-name">营业利润 Operating Profit</td>
+                            <td class="num-val">83,334</td>
+                            <td class="num-val">83.33</td>
+                            <td class="num-val">588.00</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-name">减：净营业外损失 Net Non-operating Loss</td>
+                            <td class="num-val">32,625</td>
+                            <td class="num-val">32.63</td>
+                            <td class="num-val">230.20</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-name">税前利润 Pre-tax Profit（列示值）</td>
+                            <td class="num-val">50,708</td>
+                            <td class="num-val">50.71</td>
+                            <td class="num-val">357.79</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-name">减：所得税费用 Tax Expense</td>
+                            <td class="num-val">10,933</td>
+                            <td class="num-val">10.93</td>
+                            <td class="num-val">77.14</td>
+                        </tr>
+                        <tr>
+                            <td class="metric-name">净利润 Net Profit</td>
+                            <td class="num-val">39,776</td>
+                            <td class="num-val">39.78</td>
+                            <td class="num-val">280.66</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>83,334 − 32,625 = 50,709，比列示的税前利润 50,708 多 1 十亿韩元；50,708 − 10,933 = 39,775，比列示的净利润 39,776 少 1 十亿韩元。公司在该页注明：金额四舍五入到十亿韩元后，分项相加未必轧平。用这三笔列示值直接相减则是齐的：83,334 − 32,625 − 10,933 = 39,776。</p>
+            <p><strong>32.63 万亿韩元净营业外损失里，发布稿点名的两项</strong>（第 6 页文字，不是一套可以自己轧平的完整分录）：</p>
+            <ul>
+                <li><strong>汇兑相关损失约 11.63 万亿韩元</strong>（82.08 亿美元）。原文是汇率下跌带来的 foreign exchange-related loss。利润表附件的对应行是 “Net F/X Transaction &amp; Translation P/L” <strong>−11,633</strong> 十亿韩元，折 −82.08 亿美元。</li>
+                <li><strong>投资资产相关损失约 22.92 万亿韩元</strong>（161.72 亿美元）。这是第 6 页的文字说明。利润表附件里没有一行就叫这个名字，也没有 22,920 这个十亿韩元数字。</li>
+                <li>11.63 + 22.92 = <strong>34.55 万亿韩元</strong>，大于净营业外损失 32.63 万亿韩元。发布稿<strong>没有</strong>给出这约 1.92 万亿韩元轧差项的名称或金额，本页不补、不估。</li>
+            </ul>
+            <p><strong>利润表附件里、营业利润和税前利润之间实际单列的四行</strong>（加总 −32,624 十亿韩元，与桥上的 32,625 差 1）：</p>
+            <ul>
+                <li>金融净损益 Net Financial Profit/Loss：<strong>+434</strong> 十亿韩元（+3.06 亿美元）</li>
+                <li>汇兑交易及折算净损益：<strong>−11,633</strong> 十亿韩元（−82.08 亿美元）</li>
+                <li>联营及合营净损益：<strong>+27</strong> 十亿韩元（+0.19 亿美元）</li>
+                <li>其他 Others：<strong>−21,452</strong> 十亿韩元（−151.36 亿美元）</li>
+            </ul>
+            <p>“其他 −21,452”和文字里的“投资资产损失 22.92 万亿韩元”不是同一披露行，本页不把它们当成一个数。发布稿也没有把 22.92 万亿韩元再拆进上面四行。</p>
+            <p><strong>净利率和营业利润率：</strong>营业利润率 79.66%（公司四舍五入为 80%），净利润率 38.02%（公司四舍五入为 38%），相差 <strong>41.64 个百分点</strong>。Q3 内存主业的营业利润仍是 83.33 万亿韩元；净利润更低，是因为营业外损失和所得税，不是因为营业利润本身少了这一截。</p>
+            <p><strong>和主业、现金的关系：</strong>这整段差额都在营业利润之下，所以它不改写主业经营结果。发布稿<strong>没有</strong>把 32.63 万亿韩元标成非现金或非经常性。汇兑行的名称同时包含交易汇兑和折算汇兑，稿中没有拆开多少是现金。投资资产损失也没有写明是不是公允价值变动、是不是铠侠。因此不能把整笔差额写成已经核实的非现金、非经常性损失；能确定的是，它不属于 Q3 营业利润。</p>
+        </section>
 
         <!-- Navigation Tabs -->
         <div class="tabs-header">
@@ -582,7 +701,7 @@
                 <li><strong>单位：</strong>金额为 <strong>亿美元 (100 Million USD)</strong>，保留两位小数。EPS 为美元。</li>
                 <li><strong>EBITDA：</strong>采用公司定义，等于营业利润 + 折旧摊销。Q3 桥接表折旧摊销 4,341 十亿韩元，对应 EBITDA 87,675。现金流量表折旧摊销为 4,335 十亿韩元（含非经营闲置资产折旧）。Q2 可比 EBITDA 64,563 减去营业利润 60,543 等于 4,020；现金流量表 Q2 折旧摊销为 4,030。</li>
                 <li><strong>销售管理费用含已费用化研发。</strong>Q3 毛利 89,653 与营业成本 14,963 相加比营收多 1 十亿韩元，来自公司按十亿韩元四舍五入。</li>
-                <li><strong>营业外项目：</strong>Q3 净营业外损失 32,625 十亿韩元，其中汇兑相关损失 11.63 万亿韩元、投资资产相关损失 22.92 万亿韩元。净利润因此低于营业利润。公司将营业利润率四舍五入为 80%、净利润率四舍五入为 38%；表内比率按未四舍五入的十亿韩元计算。</li>
+                <li><strong>营业利润到净利润：</strong>见页首 KPI 下方的「Q3 营业利润 → 净利润 差异说明」。桥上的净营业外损失是 32,625 十亿韩元。第 6 页另点名汇兑相关损失约 11.63 万亿韩元、投资资产相关损失约 22.92 万亿韩元，这两项相加大于 32.63 万亿，发布稿没有给出轧差项，不能把它们直接当成 32,625 的分项。美元与利润表相同，使用 2026 Q3 均值 1,417.24。营业利润率 79.66%，净利润率 38.02%，相差 41.64 个百分点。公司将这两项比率四舍五入为 80% 和 38%。</li>
                 <li><strong>现金与有息负债：</strong>现金 = 现金及现金等价物 + 短期金融商品 + 短期投资。有息负债 = 短期借款 + 一年内到期长期借款 + 债券 + 长期借款。Q3 期末现金 114,460 十亿韩元、有息负债 15,800 十亿韩元，净现金 98,660 十亿韩元（新闻稿约 98.7 万亿韩元）。2026 Q2 与 2025 Q4 的资产负债表韩元数取自本次附件；2026 Q1 韩元数由上一版美元金额按当时汇率 1,463.56 还原后再按期末汇率折算，本次财报附件未单列 Q1 资产负债表。</li>
                 <li><strong>行业指标：</strong>Q3 只披露合计位元出货环比约 +10%、合计 ASP 环比高 20% 增长，未拆 DRAM / NAND。DRAM 与 NAND 分项因此记为 N/A。Q4 指引（DRAM 位元中 20% 环比、NAND 位元中个位数环比）是展望，未列入已实现季度。</li>
             </ul>
